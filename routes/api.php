@@ -15,3 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResource('/companies', App\Http\Controllers\CompanyController::class);
 Route::apiResource('/jobs', App\Http\Controllers\JobListingController::class);
+Route::apiResource('/universities', App\Http\Controllers\UniversityController::class);
+Route::apiResource('/students', App\Http\Controllers\StudentController::class);
+Route::apiResource('/applications', App\Http\Controllers\ApplicationController::class);
