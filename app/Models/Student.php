@@ -11,6 +11,7 @@ class Student extends Model
 
 
     protected $fillable = [
+        'user_id',
         'name',
         'address',
         'email',
@@ -21,5 +22,9 @@ class Student extends Model
     public function university()
     {
         return $this->belongsTo(University::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

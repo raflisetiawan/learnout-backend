@@ -17,6 +17,15 @@ class StudentController extends Controller
         return new StudentResource(true, 'List Data Student', $students);
     }
 
+    public function getStudentByUserId(string $id)
+    {
+        $student = Student::where('user_id', $id)->get();
+        if (count($student) === 0) {
+            return response()->json(['isRegistered' => false, 'message' => 'Anda belum terdaftar menjadi mahasiswa'], 200);
+        }
+        return response()->json(['isRegistered' => true, 'message' => 'Anda sudah terdaftar menjadi mahasiswa', 'student' => $student], 200);
+    }
+
     public function show(string $id)
     {
         $student = Student::find($id);
@@ -28,8 +37,7 @@ class StudentController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'address' => 'required|string',
-            'email' => 'required|email|unique:students',
-            'phone' => 'required|string',
+            'phone' => 'required|string|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
             'university_id' => 'required|exists:universities,id',
         ]);
 
@@ -37,10 +45,15 @@ class StudentController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $user = Student::where('user_id', $request->user_id)->first();
+        if ($user) {
+            return response()->json(['message' => 'anda sudah terdaftar menjadi mahasiswa'], 422);
+        }
+
         $student = Student::create([
+            'user_id' => $request->user_id,
             'name' => $request->name,
             'address' => $request->address,
-            'email' => $request->email,
             'phone' => $request->phone,
             'university_id' => $request->university_id,
         ]);
@@ -53,16 +66,15 @@ class StudentController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'address' => 'required|string',
-            'email' => 'required|email|unique:students',
             'phone' => 'required|string',
             'university_id' => 'required|exists:universities,id',
         ]);
 
         $student = Student::find($id);
         $student->update([
+            'user_id' => $request->user_id,
             'name' => $request->name,
             'address' => $request->address,
-            'email' => $request->email,
             'phone' => $request->phone,
             'university_id' => $request->university_id,
         ]);
