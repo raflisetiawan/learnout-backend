@@ -70,6 +70,11 @@ class StudentController extends Controller
             'university_id' => 'required|exists:universities,id',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+
         $student = Student::find($id);
         $student->update([
             'user_id' => $request->user_id,

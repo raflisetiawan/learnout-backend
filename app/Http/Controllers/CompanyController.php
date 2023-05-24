@@ -39,14 +39,21 @@ class CompanyController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'location' => 'required|string',
-            'website' => 'nullable|url',
+            'website' => 'nullable|regex:/^(?:[-A-Za-z0-9]+\.)+[A-Za-z]{2,}$/',
             'email' => 'required|email',
             'phone' => 'required|string',
+            'user_id' => 'required'
         ]);
 
         //check if validation fails
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
+        }
+
+
+        $user = Company::where('user_id', $request->user_id)->first();
+        if ($user) {
+            return response()->json(['message' => 'anda sudah terdaftar menjadi mahasiswa'], 422);
         }
 
         $company = Company::create([
@@ -56,10 +63,21 @@ class CompanyController extends Controller
             'website' => $request->website,
             'email' => $request->email,
             'phone' => $request->phone,
+            'user_id' => $request->user_id
         ]);
 
         return new CompanyResource(true, 'Data Company Berhasil Ditambahkan!', $company);
     }
+
+    public function getCompanyByUserId(string $id)
+    {
+        $company = Company::where('user_id', $id)->get();
+        if (count($company) === 0) {
+            return response()->json(['isRegistered' => false, 'message' => 'Anda belum terdaftar menjadi owner perusahaan'], 200);
+        }
+        return response()->json(['isRegistered' => true, 'message' => 'Anda sudah terdaftar menjadi owner perusahaan', 'student' => $company], 200);
+    }
+
 
     /**
      * Display the specified resource.
@@ -100,6 +118,12 @@ class CompanyController extends Controller
             return response()->json($validator->errors(), 422);
         }
         $company = Company::find($id);
+
+
+        $user = Company::where('user_id', $request->user_id)->first();
+        if ($user) {
+            return response()->json(['message' => 'anda sudah terdaftar menjadi mahasiswa'], 422);
+        }
 
         $company->update([
             'name' => $request->name,
