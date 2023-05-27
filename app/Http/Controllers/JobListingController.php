@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\JobListing as ResourcesJobListing;
+use App\Models\Category;
 use App\Models\JobListing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -28,6 +29,7 @@ class JobListingController extends Controller
             'schedule' => 'nullable|string',
             'start_time' => 'nullable|date_format:H:i:s',
             'end_time' => 'nullable|date_format:H:i:s',
+            'categories' => 'required|array'
         ]);
 
         //check if validation fails
@@ -45,6 +47,9 @@ class JobListingController extends Controller
             'end_time' => $request->end_time,
         ]);
 
+        $categoryIds = $request->input('categories');
+        $job->categories()->sync($categoryIds);
+
         return new ResourcesJobListing(true, 'Data job berhasil di tambahkan', $job);
     }
 
@@ -58,6 +63,7 @@ class JobListingController extends Controller
             'schedule' => 'nullable|string',
             'start_time' => 'nullable|date_format:H:i:s',
             'end_time' => 'nullable|date_format:H:i:s',
+            'categories' => 'required|array'
         ]);
 
         //check if validation fails
@@ -76,6 +82,9 @@ class JobListingController extends Controller
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
         ]);
+
+        $categoryIds = $request->input('categories');
+        $job->categories()->sync($categoryIds);
 
         return new ResourcesJobListing(true, 'Data job berhasil di update', $job);
     }

@@ -26,6 +26,7 @@ Route::apiResource('/universities', App\Http\Controllers\UniversityController::c
 Route::apiResource('/students', App\Http\Controllers\StudentController::class);
 Route::get('/students/user-id/{id}', 'App\Http\Controllers\StudentController@getStudentByUserId');
 Route::apiResource('/applications', App\Http\Controllers\ApplicationController::class);
+Route::apiResource('/categories', App\Http\Controllers\CategoryController::class);
 
 Route::post('/signin', 'App\Http\Controllers\SignInController@index');
 Route::get('/signout', 'App\Http\Controllers\SignInController@logout');

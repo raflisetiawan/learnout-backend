@@ -25,4 +25,9 @@ class JobListing extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'joblistings_category', 'joblistings_id', 'category_id');
+    }
 }
