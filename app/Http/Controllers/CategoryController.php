@@ -17,10 +17,10 @@ class CategoryController extends Controller
     public function index()
     {
         //
-        $posts = Category::latest()->paginate(5);
+        $categories = Category::all();
 
-        //return collection of posts as a resource
-        return new CategoryResource(true, 'List Data categories', $posts);
+        //return collection of categories as a resource
+        return new CategoryResource(true, $categories, 'List Data categories');
     }
 
     /**

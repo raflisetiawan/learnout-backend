@@ -96,11 +96,15 @@ class JobListingController extends Controller
         return new ResourcesJobListing(true, 'Detail Data job ', $job);
     }
 
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $job = JobListing::find($id);
+        $jobListing = JobListing::findOrFail($id);
 
-        $job->delete();
-        return new ResourcesJobListing(true, 'Hapus Data job ', $job);
+        // Menghapus relasi dengan kategori
+        $jobListing->categories()->detach();
+
+        // Menghapus job listing
+        $jobListing->delete();
+        return new ResourcesJobListing(true, 'Hapus Data job ', $jobListing);
     }
 }

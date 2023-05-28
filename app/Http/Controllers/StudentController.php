@@ -39,6 +39,7 @@ class StudentController extends Controller
             'address' => 'required|string',
             'phone' => 'required|string|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
             'university_id' => 'required|exists:universities,id',
+            'categories' => 'nullable|array'
         ]);
 
         if ($validator->fails()) {
@@ -57,6 +58,9 @@ class StudentController extends Controller
             'phone' => $request->phone,
             'university_id' => $request->university_id,
         ]);
+
+        $categoryIds = $request->input('categories');
+        $student->categories()->sync($categoryIds);
 
         return new StudentResource(true, 'Data Student Berhasil ditambahkan', $student);
     }
