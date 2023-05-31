@@ -22,6 +22,8 @@ class UniversityController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'location' => 'required|string',
+            'district' => 'required|string',
+            'regency' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -31,6 +33,8 @@ class UniversityController extends Controller
         $university = University::create([
             'name' => $request->name,
             'location' => $request->location,
+            'regency' => $request->regency,
+            'district' => $request->district
         ]);
 
         return new UniversityResource(true, 'Data Universitas berhasil ditambahkan', $university);
@@ -41,6 +45,9 @@ class UniversityController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'location' => 'required|string',
+            'district' => 'required|string',
+            'regency' => 'required'
+
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -51,6 +58,8 @@ class UniversityController extends Controller
         $university->update([
             'name' => $request->name,
             'location' => $request->location,
+            'regency' => $request->regency,
+            'district' => $request->district
         ]);
 
         return new UniversityResource(true, 'Data Universitas berhasil di update', $university);

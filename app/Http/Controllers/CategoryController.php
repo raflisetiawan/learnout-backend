@@ -49,12 +49,6 @@ class CategoryController extends Controller
 
         $category = Category::create([
             'name' => $request->name,
-            'description' => $request->description,
-            'location' => $request->location,
-            'website' => $request->website,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'user_id' => $request->user_id
         ]);
 
         return new CompanyResource(true, 'Data category Berhasil Ditambahkan!', $category);
@@ -66,6 +60,8 @@ class CategoryController extends Controller
     public function show(string $id)
     {
         //
+        $category = Category::findOrFail($id);
+        return new CompanyResource(true, 'Detail Data category!', $category);
     }
 
     /**
@@ -82,6 +78,21 @@ class CategoryController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+        ]);
+
+        //check if validation fails
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        $category = Category::findOrFail($id);
+
+        $category->update([
+            'name' => $request->name
+        ]);
+
+        return new CompanyResource(true, 'Data category Berhasil di ubah!', $category);
     }
 
     /**
@@ -90,5 +101,9 @@ class CategoryController extends Controller
     public function destroy(string $id)
     {
         //
+        $category = Category::find($id);
+        $category->delete();
+
+        return new CompanyResource(true, 'Data category Berhasil Dihapus!', $category);
     }
 }

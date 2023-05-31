@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('name');
             $table->text('address');
             $table->string('phone');
+            $table->string('regency');
+            $table->string('district');
             $table->unsignedBigInteger('university_id');
             $table->timestamps();
 

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('location');
+            $table->string('regency');
+            $table->string('district');
             $table->string('schedule')->nullable()->default('Terjadwal');
             $table->time('start_time');
             $table->time('end_time');

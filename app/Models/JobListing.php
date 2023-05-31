@@ -16,6 +16,8 @@ class JobListing extends Model
         'description',
         'location',
         'schedule',
+        'regencies',
+        'districts',
         'start_time',
         'end_time',
     ];

@@ -18,6 +18,8 @@ class Student extends Model
         'email',
         'phone',
         'university_id',
+        'regencies',
+        'districts',
     ];
 
     public function university()
