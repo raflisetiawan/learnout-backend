@@ -39,7 +39,9 @@ class StudentController extends Controller
             'address' => 'required|string',
             'phone' => 'required|string|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
             'university_id' => 'required|exists:universities,id',
-            'categories' => 'nullable|array'
+            'categories' => 'nullable|array',
+            'regency' => 'required',
+            'district' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -57,6 +59,8 @@ class StudentController extends Controller
             'address' => $request->address,
             'phone' => $request->phone,
             'university_id' => $request->university_id,
+            'regency' => $request->regency,
+            'district' => $request->district
         ]);
 
         $categoryIds = $request->input('categories');
@@ -72,6 +76,8 @@ class StudentController extends Controller
             'address' => 'required|string',
             'phone' => 'required|string',
             'university_id' => 'required|exists:universities,id',
+            'regency' => 'required',
+            'district' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -86,6 +92,8 @@ class StudentController extends Controller
             'address' => $request->address,
             'phone' => $request->phone,
             'university_id' => $request->university_id,
+            'regency' => $request->regency,
+            'district' => $request->district
         ]);
 
         return new StudentResource(true, 'Data Student Berhasil di update', $student);

@@ -11,7 +11,7 @@ class UniversityController extends Controller
 {
     public function index()
     {
-        $universities = University::all();
+        $universities = University::latest()->get();
 
         //return collection of universities as a resource
         return new UniversityResource(true, 'List Data Job', $universities);

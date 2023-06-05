@@ -42,7 +42,9 @@ class CompanyController extends Controller
             'website' => 'nullable|regex:/^(?:[-A-Za-z0-9]+\.)+[A-Za-z]{2,}$/',
             'email' => 'required|email',
             'phone' => 'required|string',
-            'user_id' => 'required'
+            'user_id' => 'required',
+            'regency' => 'required',
+            'district' => 'required',
         ]);
 
         //check if validation fails
@@ -63,7 +65,9 @@ class CompanyController extends Controller
             'website' => $request->website,
             'email' => $request->email,
             'phone' => $request->phone,
-            'user_id' => $request->user_id
+            'user_id' => $request->user_id,
+            'regency' => $request->regency,
+            'district' => $request->district,
         ]);
 
         return new CompanyResource(true, 'Data Company Berhasil Ditambahkan!', $company);
@@ -110,6 +114,8 @@ class CompanyController extends Controller
             'website' => 'nullable|url',
             'email' => 'required|email',
             'phone' => 'required|string',
+            'regency' => 'required',
+            'district' => 'required'
         ]);
 
 
@@ -122,7 +128,7 @@ class CompanyController extends Controller
 
         $user = Company::where('user_id', $request->user_id)->first();
         if ($user) {
-            return response()->json(['message' => 'anda sudah terdaftar menjadi mahasiswa'], 422);
+            return response()->json(['message' => 'anda sudah terdaftar menjadi Company'], 422);
         }
 
         $company->update([
@@ -132,6 +138,8 @@ class CompanyController extends Controller
             'website' => $request->website,
             'email' => $request->email,
             'phone' => $request->phone,
+            'regency' => $request->regency,
+            'district' => $request->district,
         ]);
 
         return new CompanyResource(true, 'Data company berhasil di update', $company);

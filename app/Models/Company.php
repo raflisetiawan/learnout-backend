@@ -16,7 +16,9 @@ class Company extends Model
         'location',
         'website',
         'email',
-        'phone'
+        'phone',
+        'regency',
+        'district'
     ];
 
     public function user()
