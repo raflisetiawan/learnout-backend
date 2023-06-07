@@ -18,6 +18,18 @@ class UserController extends Controller
         return new ResourcesUser(true, 'List Data User with specific role', $users);
     }
 
+    public function addRole(string $id, Request $request)
+    {
+        $user = User::find($id);
+        $user->update([
+            'name' => $user->name,
+            'email' => $user->email,
+            'password' => $user->password,
+            'role' => $request->role
+        ]);
+        return new ResourcesUser(true, 'List Data User with specific role', $user);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -39,7 +51,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::with('role')->findOrFail($id);
+        $user = User::findOrFail($id);
         return new ResourcesUser(true, 'role User', $user);
     }
 

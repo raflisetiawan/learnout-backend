@@ -22,19 +22,25 @@ class SignUpController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'user'
+            ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role
-        ]);
-
-        return response()->json([
-            'message' => 'User registered successfully.',
-            'user' => $user,
-        ], 201);
+            return response()->json([
+                'message' => 'User registered successfully.',
+                'user' => $user,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Terjadi kesalahan saat memproses pendaftaran. Silakan coba lagi nanti.'
+            ], 500);
+        }
     }
+
 
     public function update(Request $request, string $id)
     {

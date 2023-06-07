@@ -26,6 +26,15 @@ class StudentController extends Controller
         return response()->json(['isRegistered' => true, 'message' => 'Anda sudah terdaftar menjadi mahasiswa', 'student' => $student], 200);
     }
 
+    public function getOneStudentByUserId(string $id)
+    {
+        $student = Student::where('user_id', $id)->first();
+        if (!$student) {
+            return response()->json(['isRegistered' => false, 'message' => 'Anda belum terdaftar menjadi mahasiswa'], 200);
+        }
+        return response()->json(['isRegistered' => true, 'student' => $student], 200);
+    }
+
     public function show(string $id)
     {
         $student = Student::find($id);

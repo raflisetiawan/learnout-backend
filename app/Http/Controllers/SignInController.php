@@ -17,19 +17,26 @@ class SignInController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user) {
             return response([
-                'success'   => false,
-                'message' => ['Email atau Password yang anda masukkan salah']
+                'success' => false,
+                'message' => 'Email tidak terdaftar'
             ], 404);
+        }
+
+        if (!Hash::check($request->password, $user->password)) {
+            return response([
+                'success' => false,
+                'message' => 'Email atau password yang Anda masukkan salah.'
+            ], 401);
         }
 
         $token = $user->createToken('ApiToken')->plainTextToken;
 
         $response = [
-            'success'   => true,
-            'user'      => $user,
-            'token'     => $token
+            'success' => true,
+            'user' => $user,
+            'token' => $token
         ];
 
         return response($response, 201);

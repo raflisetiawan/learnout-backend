@@ -19,6 +19,12 @@ class JobListingController extends Controller
         return new ResourcesJobListing(true, 'List Data Job', $jobs);
     }
 
+    public function searchByRegency(string $regency)
+    {
+        $jobs = JobListing::where('regency', $regency)->get();
+        return $jobs;
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -29,7 +35,9 @@ class JobListingController extends Controller
             'schedule' => 'nullable|string',
             'start_time' => 'nullable|date_format:H:i:s',
             'end_time' => 'nullable|date_format:H:i:s',
-            'categories' => 'required|array'
+            'categories' => 'required|array',
+            'regency' => 'required|string',
+            'district' => 'required|string'
         ]);
 
         //check if validation fails
@@ -45,12 +53,27 @@ class JobListingController extends Controller
             'schedule' => $request->schedule,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
+            'regency' => $request->regency,
+            'district' => $request->district
         ]);
 
         $categoryIds = $request->input('categories');
         $job->categories()->sync($categoryIds);
 
         return new ResourcesJobListing(true, 'Data job berhasil di tambahkan', $job);
+    }
+
+    public function getCategoriesByJobId(string $id)
+    {
+        $job = JobListing::with('categories')->find($id);
+
+        if (!$job) {
+            return response()->json(['message' => 'Job not found'], 404);
+        }
+
+        $categories = $job->categories;
+
+        return response()->json($categories, 200);
     }
 
     public function update(Request $request, string $id)
@@ -61,6 +84,8 @@ class JobListingController extends Controller
             'description' => 'required|string',
             'location' => 'required|string',
             'schedule' => 'nullable|string',
+            'regency' => 'required|string',
+            'district' => 'required|string',
             'start_time' => 'nullable|date_format:H:i:s',
             'end_time' => 'nullable|date_format:H:i:s',
             'categories' => 'required|array'
