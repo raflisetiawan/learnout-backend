@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\StudentResource;
+use App\Models\JobListing;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -24,15 +25,6 @@ class StudentController extends Controller
             return response()->json(['isRegistered' => false, 'message' => 'Anda belum terdaftar menjadi mahasiswa'], 200);
         }
         return response()->json(['isRegistered' => true, 'message' => 'Anda sudah terdaftar menjadi mahasiswa', 'student' => $student], 200);
-    }
-
-    public function getOneStudentByUserId(string $id)
-    {
-        $student = Student::where('user_id', $id)->first();
-        if (!$student) {
-            return response()->json(['isRegistered' => false, 'message' => 'Anda belum terdaftar menjadi mahasiswa'], 200);
-        }
-        return response()->json(['isRegistered' => true, 'student' => $student], 200);
     }
 
     public function show(string $id)
@@ -116,5 +108,22 @@ class StudentController extends Controller
             return new StudentResource(true, 'Data Student Berhasil di hapus', $student);
         }
         return new StudentResource(false, 'Data Student tidak ditemukan', $student);
+    }
+
+    public function jobAround(string $id)
+    {
+        $student = Student::where('user_id', $id)->first();
+        if (!$student) {
+            return response()->json(['isRegistered' => false, 'message' => 'Anda belum terdaftar menjadi mahasiswa'], 200);
+        }
+
+        $regency = $student->regency;
+        $jobs = JobListing::with('company', 'categories')->where('regency', $regency)->get();
+
+        if ($jobs->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'Pekerjaan tidak ditemukan'], 200);
+        }
+
+        return response()->json(['jobs' => $jobs], 200);
     }
 }

@@ -82,6 +82,12 @@ class CompanyController extends Controller
         return response()->json(['isRegistered' => true, 'message' => 'Anda sudah terdaftar menjadi owner perusahaan', 'student' => $company], 200);
     }
 
+    public function getOneCompanyByUserId(string $id)
+    {
+        $company = Company::where('user_id', $id)->first();
+        return response()->json(['success' => true, 'company' => $company], 200);
+    }
+
 
     /**
      * Display the specified resource.

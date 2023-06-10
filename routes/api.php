@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\JobListingController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,18 +25,27 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('/companies', App\Http\Controllers\CompanyController::class);
 Route::get('/companies/user-id/{id}', [CompanyController::class, 'getCompanyByUserId']);
+Route::get('/companies/getOneCompanyByUserId/{id}', [CompanyController::class, 'getOneCompanyByUserId']);
+
 Route::apiResource('/users', UserController::class);
+
 Route::apiResource('/jobs', App\Http\Controllers\JobListingController::class);
-Route::get('/jobs/getCategoriesByJobId/{id}', [JobListingController::class, 'getCategoriesByJobId']);
+Route::get('/jobs/showJobWithCompanyAndCategories/{id}', [JobListingController::class, 'showJobWithCompanyAndCategories']);
+Route::get('/jobs/getJobByInterest/{id}', [JobListingController::class, 'getJobWithCompanyByCategoryIdFromStudentIdFromUserId']);
+
+
 Route::apiResource('/universities', App\Http\Controllers\UniversityController::class);
+
 Route::apiResource('/students', App\Http\Controllers\StudentController::class);
 Route::get('/students/user-id/{id}', 'App\Http\Controllers\StudentController@getStudentByUserId');
-Route::get('/students/getOneStudentByUserId/{id}', 'App\Http\Controllers\StudentController@getOneStudentByUserId');
-Route::apiResource('/applications', App\Http\Controllers\ApplicationController::class);
-Route::apiResource('/categories', App\Http\Controllers\CategoryController::class);
-Route::patch('/users/update_role/{id}', [UserController::class, 'addRole']);
+Route::get('/students/getJobAround/{id}', [StudentController::class, 'jobAround']);
 
-Route::get('/joblistings/searchByRegency/{regency}', [JobListingController::class, 'searchByRegency']);
+Route::apiResource('/applications', App\Http\Controllers\ApplicationController::class);
+
+Route::apiResource('/categories', App\Http\Controllers\CategoryController::class);
+Route::apiResource('/categories', App\Http\Controllers\CategoryController::class);
+
+Route::patch('/users/update_role/{id}', [UserController::class, 'addRole']);
 
 Route::post('/signin', 'App\Http\Controllers\SignInController@index');
 Route::get('/signout', 'App\Http\Controllers\SignInController@logout');

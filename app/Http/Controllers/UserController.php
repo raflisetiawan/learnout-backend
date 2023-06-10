@@ -52,7 +52,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::findOrFail($id);
-        return new ResourcesUser(true, 'role User', $user);
+        return new ResourcesUser(true, 'User', $user);
     }
 
     /**

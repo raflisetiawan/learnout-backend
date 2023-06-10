@@ -3,13 +3,45 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\JobListing as ResourcesJobListing;
-use App\Models\Category;
 use App\Models\JobListing;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class JobListingController extends Controller
 {
+    public function getJobWithCompanyByCategoryIdFromStudentIdFromUserId(string $id)
+    {
+        // Find the user by ID
+        $user = User::findOrFail($id);
+
+        // Find the student associated with the user
+        $student = $user->student;
+
+        if (!$student) {
+            return response()->json(['success' => false, 'message' => 'Student not found'], 404);
+        }
+
+        // Retrieve the categories associated with the student
+        $categories = $student->categories;
+
+        if ($categories->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'Categories not found for the student'], 404);
+        }
+
+        // Retrieve the job listings associated with the categories
+        $jobs = collect();
+        foreach ($categories as $category) {
+            $jobs = $jobs->merge($category->jobs()->with('company', 'categories')->get());
+        }
+
+        if ($jobs->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'No job listings found for the categories'], 200);
+        }
+
+        return response()->json(['success' => true, 'jobs' => $jobs], 200);
+    }
+
     //
     public function index()
     {
@@ -19,11 +51,7 @@ class JobListingController extends Controller
         return new ResourcesJobListing(true, 'List Data Job', $jobs);
     }
 
-    public function searchByRegency(string $regency)
-    {
-        $jobs = JobListing::where('regency', $regency)->get();
-        return $jobs;
-    }
+
 
     public function store(Request $request)
     {
@@ -61,19 +89,6 @@ class JobListingController extends Controller
         $job->categories()->sync($categoryIds);
 
         return new ResourcesJobListing(true, 'Data job berhasil di tambahkan', $job);
-    }
-
-    public function getCategoriesByJobId(string $id)
-    {
-        $job = JobListing::with('categories')->find($id);
-
-        if (!$job) {
-            return response()->json(['message' => 'Job not found'], 404);
-        }
-
-        $categories = $job->categories;
-
-        return response()->json($categories, 200);
     }
 
     public function update(Request $request, string $id)
@@ -116,9 +131,14 @@ class JobListingController extends Controller
 
     public function show(string $id)
     {
-        $job = JobListing::find($id);
-
+        $job = JobListing::with('company')->find($id);
         return new ResourcesJobListing(true, 'Detail Data job ', $job);
+    }
+
+    public function showJobWithCompanyAndCategories(string $id)
+    {
+        $job = JobListing::with('company', 'categories')->find($id);
+        return new ResourcesJobListing(true, 'job ', $job);
     }
 
     public function destroy($id)

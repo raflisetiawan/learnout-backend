@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('company_id');
             $table->foreign('company_id')->references('id')->on('companies');
             $table->string('title');
-            $table->text('description');
+            $table->longText('description');
             $table->string('location');
             $table->string('regency');
             $table->string('district');

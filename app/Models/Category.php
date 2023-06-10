@@ -14,7 +14,7 @@ class Category extends Model
 
     public function jobs()
     {
-        return $this->belongsToMany(Job::class, 'joblistings_category', 'joblistings_id', 'category_id');
+        return $this->belongsToMany(JobListing::class, 'joblistings_category', 'joblistings_id', 'category_id');
     }
 
     protected $guarded = [];
