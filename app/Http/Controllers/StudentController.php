@@ -18,6 +18,15 @@ class StudentController extends Controller
         return new StudentResource(true, 'List Data Student', $students);
     }
 
+    public function getStudentIdByUserId(string $id)
+    {
+        $student = Student::where('user_id', $id)->first();
+        if (!$student) {
+            return response()->json(['success' => false, 'message' => 'Student not found'], 404);
+        }
+        return response()->json(['student_id' => $student->id], 200);
+    }
+
     public function getStudentByUserId(string $id)
     {
         $student = Student::where('user_id', $id)->get();

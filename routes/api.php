@@ -38,6 +38,7 @@ Route::apiResource('/universities', App\Http\Controllers\UniversityController::c
 
 Route::apiResource('/students', App\Http\Controllers\StudentController::class);
 Route::get('/students/user-id/{id}', 'App\Http\Controllers\StudentController@getStudentByUserId');
+Route::get('/students/getStudentIdByUserId/{id}', 'App\Http\Controllers\StudentController@getStudentIdByUserId');
 Route::get('/students/getJobAround/{id}', [StudentController::class, 'jobAround']);
 
 Route::apiResource('/applications', App\Http\Controllers\ApplicationController::class);
