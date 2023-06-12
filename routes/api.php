@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\JobListingController;
 use App\Http\Controllers\StudentController;
@@ -27,6 +28,8 @@ Route::apiResource('/companies', App\Http\Controllers\CompanyController::class);
 Route::get('/companies/user-id/{id}', [CompanyController::class, 'getCompanyByUserId']);
 Route::get('/companies/getOneCompanyByUserId/{id}', [CompanyController::class, 'getOneCompanyByUserId']);
 
+Route::get('/users/getUserAndStudentByUserId/{id}', [UserController::class, 'getUserAndStudentByUserId']);
+Route::get('/users/getUserAndCompanyByUserId/{id}', [UserController::class, 'getUserAndCompanyByUserId']);
 Route::apiResource('/users', UserController::class);
 
 Route::apiResource('/jobs', App\Http\Controllers\JobListingController::class);
@@ -40,8 +43,12 @@ Route::apiResource('/students', App\Http\Controllers\StudentController::class);
 Route::get('/students/user-id/{id}', 'App\Http\Controllers\StudentController@getStudentByUserId');
 Route::get('/students/getStudentIdByUserId/{id}', 'App\Http\Controllers\StudentController@getStudentIdByUserId');
 Route::get('/students/getJobAround/{id}', [StudentController::class, 'jobAround']);
+Route::get('/students/getApplicationHistoryByUserId/{id}', [StudentController::class, 'getApplicationHistoryByUserId']);
 
 Route::apiResource('/applications', App\Http\Controllers\ApplicationController::class);
+Route::get('/applications/getApplicationsHistoryByUserId/{id}', [ApplicationController::class, 'getApplicationsHistoryByUserId']);
+Route::get('/applications/getApplicationsHistoryByStudentId/{id}', [ApplicationController::class, 'getApplicationsHistoryByStudentId']);
+
 
 Route::apiResource('/categories', App\Http\Controllers\CategoryController::class);
 Route::apiResource('/categories', App\Http\Controllers\CategoryController::class);

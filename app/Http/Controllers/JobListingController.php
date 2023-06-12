@@ -141,6 +141,7 @@ class JobListingController extends Controller
         return new ResourcesJobListing(true, 'job ', $job);
     }
 
+
     public function destroy($id)
     {
         $jobListing = JobListing::findOrFail($id);

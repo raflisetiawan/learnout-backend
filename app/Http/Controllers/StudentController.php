@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\StudentResource;
+use App\Models\Application;
 use App\Models\JobListing;
 use App\Models\Student;
 use Illuminate\Http\Request;
@@ -134,5 +135,18 @@ class StudentController extends Controller
         }
 
         return response()->json(['jobs' => $jobs], 200);
+    }
+
+    public function getApplicationHistoryByUserId(string $id)
+    {
+        $student = Student::where('user_id', $id)->first();
+
+        if (!$student) {
+            return response()->json(['message' => 'Student not found.'], 404);
+        }
+
+        $applications = Application::where('student_id', $student->id)->get();
+
+        return response()->json($applications);
     }
 }

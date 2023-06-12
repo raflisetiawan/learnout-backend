@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\User as ResourcesUser;
+use App\Models\Company;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -92,5 +94,48 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getUserAndStudentByUserId(string $id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+        $student = Student::where('user_id', $user->id)->first();
+
+        if (!$student) {
+            return response()->json(['message' => 'Student not found.'], 404);
+        }
+
+        $data = [
+            'user' => $user,
+            'student' => $student,
+        ];
+
+        return response()->json($data);
+    }
+
+    public function getUserAndCompanyByUserId(string $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+        $company = Company::where('user_id', $user->id)->first();
+
+        if (!$company) {
+            return response()->json(['message' => 'Company not found.'], 404);
+        }
+
+        $data = [
+            'user' => $user,
+            'company' => $company,
+        ];
+
+        return response()->json($data);
     }
 }

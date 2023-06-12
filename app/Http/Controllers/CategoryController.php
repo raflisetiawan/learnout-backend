@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\CompanyResource;
 use App\Models\Category;
-use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 

@@ -16,7 +16,13 @@ class Application extends Model
     protected function resume(): Attribute
     {
         return Attribute::make(
-            get: fn ($resume) => asset('/storage/applications/' . $resume),
+            get: fn ($resume) => asset('/storage/applications/resumes/' . $resume),
+        );
+    }
+    protected function coverLetter(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($cover_letter) => asset('/storage/applications/cover-letters/' . $cover_letter),
         );
     }
 
