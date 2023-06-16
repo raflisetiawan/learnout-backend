@@ -149,4 +149,14 @@ class StudentController extends Controller
 
         return response()->json($applications);
     }
+
+
+    public function getStudentsByJobId(string $studentId)
+    {
+        $students = Student::whereHas('joblistings', function ($query) use ($studentId) {
+            $query->where('joblistings.id', $studentId);
+        })->get();
+
+        return response()->json(['data' => $students], 200);
+    }
 }

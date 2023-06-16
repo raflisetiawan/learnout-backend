@@ -121,6 +121,8 @@ class JobListingController extends Controller
             'schedule' => $request->schedule,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
+            'regency' => $request->regency,
+            'district' => $request->district,
         ]);
 
         $categoryIds = $request->input('categories');
@@ -139,6 +141,15 @@ class JobListingController extends Controller
     {
         $job = JobListing::with('company', 'categories')->find($id);
         return new ResourcesJobListing(true, 'job ', $job);
+    }
+
+    public function getJobByCompanyId(string $companyId)
+    {
+        $jobs = JobListing::where('company_id', $companyId)->get();
+        if (!$jobs) {
+            return response()->json(['message' => 'Job Not Found'], 404);
+        }
+        return response()->json(['data' => $jobs], 200);
     }
 
 

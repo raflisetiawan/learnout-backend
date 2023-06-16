@@ -36,6 +36,7 @@ Route::patch('/users/updateImageAndName/{id}', [UserController::class, 'updateIm
 Route::apiResource('/jobs', App\Http\Controllers\JobListingController::class);
 Route::get('/jobs/showJobWithCompanyAndCategories/{id}', [JobListingController::class, 'showJobWithCompanyAndCategories']);
 Route::get('/jobs/getJobByInterest/{id}', [JobListingController::class, 'getJobWithCompanyByCategoryIdFromStudentIdFromUserId']);
+Route::get('/jobs/getJobByCompanyId/{id}', [JobListingController::class, 'getJobByCompanyId']);
 
 
 Route::apiResource('/universities', App\Http\Controllers\UniversityController::class);
@@ -45,11 +46,13 @@ Route::get('/students/user-id/{id}', 'App\Http\Controllers\StudentController@get
 Route::get('/students/getStudentIdByUserId/{id}', 'App\Http\Controllers\StudentController@getStudentIdByUserId');
 Route::get('/students/getJobAround/{id}', [StudentController::class, 'jobAround']);
 Route::get('/students/getApplicationHistoryByUserId/{id}', [StudentController::class, 'getApplicationHistoryByUserId']);
+Route::get('/students/getStudentsByJobId/{id}', [StudentController::class, 'getStudentsByJobId']);
 
 Route::apiResource('/applications', App\Http\Controllers\ApplicationController::class);
 Route::get('/applications/getApplicationsHistoryByUserId/{id}', [ApplicationController::class, 'getApplicationsHistoryByUserId']);
 Route::get('/applications/getApplicationsHistoryByStudentId/{id}', [ApplicationController::class, 'getApplicationsHistoryByStudentId']);
 Route::patch('/applications/cancel/{id}', [ApplicationController::class, 'cancel']);
+Route::get('/applications/getApplicationsHistoryByJobId/{id}', [ApplicationController::class, 'getApplicationsHistoryByJobId']);
 
 
 Route::apiResource('/categories', App\Http\Controllers\CategoryController::class);

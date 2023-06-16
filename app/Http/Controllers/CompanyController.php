@@ -77,7 +77,7 @@ class CompanyController extends Controller
     {
         $company = Company::where('user_id', $id)->get();
         if (count($company) === 0) {
-            return response()->json(['isRegistered' => false, 'message' => 'Anda belum terdaftar menjadi owner perusahaan'], 200);
+            return response()->json(['isRegistered' => false, 'message' => 'Anda belum terdaftar menjadi owner perusahaan', 'data' => $company], 200);
         }
         return response()->json(['isRegistered' => true, 'message' => 'Anda sudah terdaftar menjadi owner perusahaan', 'student' => $company], 200);
     }

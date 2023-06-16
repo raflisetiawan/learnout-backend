@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\JobListing;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,6 +34,6 @@ class Application extends Model
 
     public function joblisting()
     {
-        return $this->belongsTo(job_listing::class);
+        return $this->belongsTo(JobListing::class);
     }
 }

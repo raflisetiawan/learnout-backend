@@ -22,6 +22,11 @@ class Student extends Model
         'district',
     ];
 
+    public function applications(): BelongsToMany
+    {
+        return $this->belongsToMany(Application::class, 'application_student', 'student_id', 'application_id');
+    }
+
     public function university()
     {
         return $this->belongsTo(University::class);
@@ -36,5 +41,10 @@ class Student extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'student_category');
+    }
+
+    public function joblistings()
+    {
+        return $this->belongsToMany(Joblisting::class, 'student_joblisting', 'student_id', 'joblisting_id');
     }
 }

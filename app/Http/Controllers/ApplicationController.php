@@ -93,6 +93,31 @@ class ApplicationController extends Controller
         return response()->json($applications);
     }
 
+    public function getApplicationsHistoryByJobId(string $id)
+    {
+        $applications = Application::where('joblisting_id', $id)
+            ->where('is_canceled', false)
+            ->with('student')
+            ->get();
+
+        if ($applications->isEmpty()) {
+            return response()->json(['message' => 'Application not found.'], 404);
+        }
+
+        // Ambil data student beserta waktu mendaftar dari setiap aplikasi
+        $students = $applications->map(function ($application) {
+            return [
+                'student' => $application->student,
+                'created_at' => $application->created_at,
+            ];
+        });
+
+        return response()->json($students);
+    }
+
+
+
+
     public function update(string $id, Request $request)
     {
         $validator = Validator::make($request->all(), [
