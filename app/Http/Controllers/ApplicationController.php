@@ -71,7 +71,9 @@ class ApplicationController extends Controller
             return response()->json(['message' => 'Student not found.'], 404);
         }
 
-        $applications = Application::where('student_id', $student->id)->with('joblisting.company')
+        $applications = Application::where('student_id', $student->id)
+            ->where('is_canceled', false)
+            ->with('joblisting.company')
             ->get();
 
         return response()->json($applications);
@@ -79,11 +81,15 @@ class ApplicationController extends Controller
 
     public function getApplicationsHistoryByStudentId(string $id)
     {
-        $applications = Application::where('student_id', $id)->with('joblisting.company')
-            ->get();;
-        if (!$applications) {
+        $applications = Application::where('student_id', $id)
+            ->where('is_canceled', false)
+            ->with('joblisting.company')
+            ->get();
+
+        if ($applications->isEmpty()) {
             return response()->json(['message' => 'Application not found.'], 404);
         }
+
         return response()->json($applications);
     }
 
@@ -136,5 +142,42 @@ class ApplicationController extends Controller
 
 
         return new ApplicationResource(true, 'Data Application Berhasil Diperbarui!', $application);
+    }
+
+    public function destroy(string $id)
+    {
+        $application = Application::find($id);
+
+        if (!$application) {
+            return response()->json(['message' => 'Data Application tidak ditemukan'], 404);
+        }
+
+        if ($application->cover_letter) {
+            Storage::delete('public/applications/cover-letters/' . basename($application->cover_letter));
+        }
+        if ($application->resume) {
+            Storage::delete('public/applications/resumes/' . basename($application->resume));
+        }
+
+        $application->joblisting()->dissociate();
+        $application->student()->dissociate();
+
+        $application->delete();
+
+        return response()->json(['message' => 'Data Application berhasil dihapus'], 200);
+    }
+
+    public function cancel(string $id)
+    {
+        $application = Application::find($id);
+
+        if (!$application) {
+            return response()->json(['message' => 'Data Application tidak ditemukan'], 404);
+        }
+
+        $application->is_canceled = true;
+        $application->save();
+
+        return response()->json(['message' => 'Pekerjaan berhasil dibatalkan'], 200);
     }
 }

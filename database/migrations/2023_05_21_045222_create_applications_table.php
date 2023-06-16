@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('cover_letter');
             $table->text('resume')->nullable();
             $table->string('status')->default('pending');
+            $table->boolean('is_canceled')->default(false);
 
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->foreign('joblisting_id')->references('id')->on('joblistings')->onDelete('cascade');

@@ -11,7 +11,7 @@ class Application extends Model
 {
     protected $table = "applications";
     use HasFactory;
-    protected $fillable = ['student_id', 'joblisting_id', 'cover_letter', 'resume', 'status'];
+    protected $fillable = ['student_id', 'joblisting_id', 'cover_letter', 'resume', 'status', 'is_canceled'];
 
     protected function resume(): Attribute
     {

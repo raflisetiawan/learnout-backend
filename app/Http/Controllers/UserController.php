@@ -88,6 +88,33 @@ class UserController extends Controller
         ]);
     }
 
+    public function updateImageAndName(Request $request, string $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'image' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $userImage = $request->file('image');
+        if (!$userImage) {
+            return response()->json(['error' => 'No image file found'], 422);
+        }
+
+        $userImage->storeAs('public/users/images', $userImage->hashName());
+
+
+        $user = User::find($id);
+        $user->update([
+            'name' => $request->name,
+            'image' => $userImage->hashName()
+        ]);
+        return response()->json(['message' => 'Berhasil Edit data User', 'image' => $user->image], 200);
+    }
+
     /**
      * Remove the specified resource from storage.
      */
