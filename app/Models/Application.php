@@ -34,6 +34,6 @@ class Application extends Model
 
     public function joblisting()
     {
-        return $this->belongsTo(JobListing::class);
+        return $this->belongsTo(job_listing::class);
     }
 }

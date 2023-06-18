@@ -91,8 +91,7 @@ class UserController extends Controller
     public function updateImageAndName(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'image' => 'required',
+            'name' => 'required|string'
         ]);
 
         if ($validator->fails()) {
@@ -100,8 +99,12 @@ class UserController extends Controller
         }
 
         $userImage = $request->file('image');
+        $user = User::find($id);
         if (!$userImage) {
-            return response()->json(['error' => 'No image file found'], 422);
+            $user->update([
+                'name' => $request->name,
+            ]);
+            return response()->json(['message' => 'Berhasil Edit data User', 'image' => $user->image], 200);
         }
 
         $userImage->storeAs('public/users/images', $userImage->hashName());
@@ -122,6 +125,28 @@ class UserController extends Controller
     {
         //
     }
+
+    public function getUserWithStudentWithUniversityByUserId(string $id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+        $student = Student::where('user_id', $user->id)->with('university', 'categories')->first();
+
+        if (!$student) {
+            return response()->json(['message' => 'Student not found.'], 404);
+        }
+
+        $data = [
+            'user' => $user,
+            'student' => $student,
+        ];
+
+        return response()->json($data);
+    }
+
 
     public function getUserAndStudentByUserId(string $id)
     {

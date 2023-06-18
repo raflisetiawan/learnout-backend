@@ -156,11 +156,7 @@ class JobListingController extends Controller
     public function destroy($id)
     {
         $jobListing = JobListing::findOrFail($id);
-
-        // Menghapus relasi dengan kategori
         $jobListing->categories()->detach();
-
-        // Menghapus job listing
         $jobListing->delete();
         return new ResourcesJobListing(true, 'Hapus Data job ', $jobListing);
     }

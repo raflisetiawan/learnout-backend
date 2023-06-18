@@ -32,6 +32,7 @@ Route::get('/users/getUserAndStudentByUserId/{id}', [UserController::class, 'get
 Route::get('/users/getUserAndCompanyByUserId/{id}', [UserController::class, 'getUserAndCompanyByUserId']);
 Route::apiResource('/users', UserController::class);
 Route::patch('/users/updateImageAndName/{id}', [UserController::class, 'updateImageAndName']);
+Route::get('/users/getUserWithStudentWithUniversityByUserId/{id}', [UserController::class, 'getUserWithStudentWithUniversityByUserId']);
 
 Route::apiResource('/jobs', App\Http\Controllers\JobListingController::class);
 Route::get('/jobs/showJobWithCompanyAndCategories/{id}', [JobListingController::class, 'showJobWithCompanyAndCategories']);
