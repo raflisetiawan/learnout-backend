@@ -20,6 +20,7 @@ class Student extends Model
         'university_id',
         'regency',
         'district',
+        'resume'
     ];
 
     public function applications(): BelongsToMany

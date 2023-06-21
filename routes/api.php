@@ -48,6 +48,9 @@ Route::get('/students/getStudentIdByUserId/{id}', 'App\Http\Controllers\StudentC
 Route::get('/students/getJobAround/{id}', [StudentController::class, 'jobAround']);
 Route::get('/students/getApplicationHistoryByUserId/{id}', [StudentController::class, 'getApplicationHistoryByUserId']);
 Route::get('/students/getStudentsByJobId/{id}', [StudentController::class, 'getStudentsByJobId']);
+Route::patch('/students/updateResumeStudent/{id}', [StudentController::class, 'updateResumeStudent']);
+Route::get('/students/getOneStudentByUserId/{id}', [StudentController::class, 'getOneStudentByUserId']);
+Route::get('/students/getStudentWithResume/{id}', [StudentController::class, 'getStudentWithResume']);
 
 Route::apiResource('/applications', App\Http\Controllers\ApplicationController::class);
 Route::get('/applications/getApplicationsHistoryByUserId/{id}', [ApplicationController::class, 'getApplicationsHistoryByUserId']);
