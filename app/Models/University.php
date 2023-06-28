@@ -14,6 +14,7 @@ class University extends Model
         'name',
         'location',
         'regency',
+        'province',
         'district',
     ];
 

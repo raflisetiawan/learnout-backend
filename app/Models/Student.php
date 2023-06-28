@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -16,11 +17,13 @@ class Student extends Model
         'name',
         'address',
         'email',
+        'province',
         'phone',
         'university_id',
         'regency',
         'district',
-        'resume'
+        'resume',
+        'curriculum_vitae'
     ];
 
     public function applications(): BelongsToMany
@@ -47,5 +50,11 @@ class Student extends Model
     public function joblistings()
     {
         return $this->belongsToMany(Joblisting::class, 'student_joblisting', 'student_id', 'joblisting_id');
+    }
+    protected function curriculumVitae(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($curriculum_vitae) => asset('/storage/students/curriculum_vitae/' . $curriculum_vitae),
+        );
     }
 }

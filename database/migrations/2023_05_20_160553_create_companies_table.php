@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('website')->nullable();
             $table->string('email');
             $table->string('phone');
+            $table->string('province')->nullable();
             $table->string('regency');
             $table->string('district');
             $table->timestamps();

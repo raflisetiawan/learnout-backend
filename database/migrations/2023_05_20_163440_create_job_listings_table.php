@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('company_id')->references('id')->on('companies');
             $table->string('title');
             $table->longText('description');
+            $table->string('province')->nullable();
             $table->string('location');
             $table->string('regency');
             $table->string('district');

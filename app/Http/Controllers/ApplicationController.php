@@ -109,11 +109,26 @@ class ApplicationController extends Controller
             return [
                 'student' => $application->student,
                 'created_at' => $application->created_at,
+                'status' => $application->status
             ];
         });
 
         return response()->json($students);
     }
+    public function getApplicationByStudentId(string $id)
+    {
+        $applications = Application::where('student_id', $id)
+            ->where('is_canceled', false)
+            ->with('student', 'joblisting.company')
+            ->get();
+
+        if ($applications->isEmpty()) {
+            return response()->json(['message' => 'Application not found.'], 404);
+        }
+
+        return response()->json($applications[0]);
+    }
+
 
 
 
@@ -204,5 +219,30 @@ class ApplicationController extends Controller
         $application->save();
 
         return response()->json(['message' => 'Pekerjaan berhasil dibatalkan'], 200);
+    }
+
+    public function rejectApplication(string $id)
+    {
+        $application = Application::find($id);
+        if (!$application) {
+            return response()->json(['message' => 'Data Application tidak ditemukan'], 404);
+        }
+
+        $application->status = 'reject';
+        $application->save();
+
+        return response()->json(['message' => 'Pekerjaan berhasil di Tolak'], 200);
+    }
+    public function acceptApplication(string $id)
+    {
+        $application = Application::find($id);
+        if (!$application) {
+            return response()->json(['message' => 'Data Application tidak ditemukan'], 404);
+        }
+
+        $application->status = 'accept';
+        $application->save();
+
+        return response()->json(['message' => 'Pekerjaan berhasil di Tolak'], 200);
     }
 }

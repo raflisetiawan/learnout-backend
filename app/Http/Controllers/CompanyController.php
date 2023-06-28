@@ -44,6 +44,7 @@ class CompanyController extends Controller
             'phone' => 'required|string',
             'user_id' => 'required',
             'regency' => 'required',
+            'province' => 'required',
             'district' => 'required',
         ]);
 
@@ -68,6 +69,7 @@ class CompanyController extends Controller
             'user_id' => $request->user_id,
             'regency' => $request->regency,
             'district' => $request->district,
+            'province' => $request->province
         ]);
 
         return new CompanyResource(true, 'Data Company Berhasil Ditambahkan!', $company);
@@ -120,6 +122,7 @@ class CompanyController extends Controller
             'website' => 'nullable|url',
             'email' => 'required|email',
             'phone' => 'required|string',
+            'province' => 'required',
             'regency' => 'required',
             'district' => 'required'
         ]);
@@ -146,6 +149,7 @@ class CompanyController extends Controller
             'phone' => $request->phone,
             'regency' => $request->regency,
             'district' => $request->district,
+            'province' => $request->province
         ]);
 
         return new CompanyResource(true, 'Data company berhasil di update', $company);

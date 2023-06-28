@@ -52,7 +52,8 @@ class StudentController extends Controller
             'university_id' => 'required|exists:universities,id',
             'categories' => 'nullable|array',
             'regency' => 'required',
-            'district' => 'required'
+            'province' => 'required',
+            'district' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -71,7 +72,8 @@ class StudentController extends Controller
             'phone' => $request->phone,
             'university_id' => $request->university_id,
             'regency' => $request->regency,
-            'district' => $request->district
+            'district' => $request->district,
+            'province' => $request->province
         ]);
 
         $categoryIds = $request->input('categories');
@@ -88,6 +90,7 @@ class StudentController extends Controller
             'phone' => 'required|string',
             'university_id' => 'required|exists:universities,id',
             'regency' => 'required',
+            'province' => 'required',
             'district' => 'required'
         ]);
 
@@ -104,7 +107,9 @@ class StudentController extends Controller
             'phone' => $request->phone,
             'university_id' => $request->university_id,
             'regency' => $request->regency,
-            'district' => $request->district
+            'district' => $request->district,
+            'province' => $request->province,
+            'resume' => $request->resume
         ]);
 
         $categoryIds = $request->input('categories');
@@ -173,14 +178,25 @@ class StudentController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $curriculumVitae = $request->file('curriculum_vitae');
+        $curriculumVitae->storeAs('public/students/curriculum_vitae', $curriculumVitae->hashName());
+
         $student = Student::findOrFail($studentId);
-        $student->update(['resume' => $request->resume]);
+        $student->update(['resume' => $request->resume, 'curriculum_vitae' => $curriculumVitae->hashName()]);
         return response()->json(['data' => $student], 200);
     }
 
     public function getOneStudentByUserId(string $id)
     {
         $student = Student::where('user_id', $id)->first();
+        if (!$student) {
+            return response()->json(['success' => false, 'message' => 'Student not found'], 404);
+        }
+        return response()->json(['student' => $student], 200);
+    }
+    public function getOneStudentByStudentId(string $id)
+    {
+        $student = Student::find($id);
         if (!$student) {
             return response()->json(['success' => false, 'message' => 'Student not found'], 404);
         }

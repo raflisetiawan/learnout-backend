@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\JobListing as ResourcesJobListing;
+use App\Models\Company;
 use App\Models\JobListing;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -43,13 +44,30 @@ class JobListingController extends Controller
     }
 
     //
-    public function index()
+    public function index(Request $request)
     {
-        $jobs = JobListing::latest()->paginate(5);
+        $keyword = $request->input('keyword');
+        $category = $request->input('category');
+        $regency = $request->input('regency');
 
-        //return collection of jobs as a resource
+        // Query job listings based on the title, category, and regency
+        $jobs = JobListing::query()
+            ->where('title', 'like', "%{$keyword}%")
+            ->when($category, function ($query, $category) {
+                return $query->whereHas('categories', function ($query) use ($category) {
+                    $query->where('categories.id', $category);
+                });
+            })
+            ->when($regency, function ($query, $regency) {
+                return $query->where('regency', $regency);
+            })
+            ->with('company')
+            ->paginate(12);
+        // Return collection of jobs as a resource
         return new ResourcesJobListing(true, 'List Data Job', $jobs);
     }
+
+
 
 
 
@@ -65,7 +83,8 @@ class JobListingController extends Controller
             'end_time' => 'nullable|date_format:H:i:s',
             'categories' => 'required|array',
             'regency' => 'required|string',
-            'district' => 'required|string'
+            'district' => 'required|string',
+            'province' => 'required',
         ]);
 
         //check if validation fails
@@ -82,7 +101,8 @@ class JobListingController extends Controller
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'regency' => $request->regency,
-            'district' => $request->district
+            'district' => $request->district,
+            'province' => $request->province
         ]);
 
         $categoryIds = $request->input('categories');
@@ -103,6 +123,7 @@ class JobListingController extends Controller
             'district' => 'required|string',
             'start_time' => 'nullable|date_format:H:i:s',
             'end_time' => 'nullable|date_format:H:i:s',
+            'province' => 'required',
             'categories' => 'required|array'
         ]);
 
@@ -123,6 +144,7 @@ class JobListingController extends Controller
             'end_time' => $request->end_time,
             'regency' => $request->regency,
             'district' => $request->district,
+            'province' => $request->province
         ]);
 
         $categoryIds = $request->input('categories');
@@ -151,6 +173,15 @@ class JobListingController extends Controller
         }
         return response()->json(['data' => $jobs], 200);
     }
+    public function getJobByUserId(string $userId)
+    {
+        $company = Company::where('user_id', $userId)->first();
+        $jobs = JobListing::where('company_id', $company->id)->get();
+        if (!$jobs) {
+            return response()->json(['message' => 'Job Not Found'], 404);
+        }
+        return response()->json(['data' => $jobs], 200);
+    }
 
 
     public function destroy($id)
@@ -159,5 +190,16 @@ class JobListingController extends Controller
         $jobListing->categories()->detach();
         $jobListing->delete();
         return new ResourcesJobListing(true, 'Hapus Data job ', $jobListing);
+    }
+
+    public function closeJob(string $id)
+    {
+        $jobListing = JobListing::findOrFail($id);
+        if (!$jobListing) {
+            return response()->json(['message' => 'Data jobListing tidak ditemukan'], 404);
+        }
+
+        $jobListing->isClosed = true;
+        $jobListing->save();
     }
 }

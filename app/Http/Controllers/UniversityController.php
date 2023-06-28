@@ -23,7 +23,8 @@ class UniversityController extends Controller
             'name' => 'required|string',
             'location' => 'required|string',
             'district' => 'required|string',
-            'regency' => 'required'
+            'regency' => 'required',
+            'province' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -34,7 +35,8 @@ class UniversityController extends Controller
             'name' => $request->name,
             'location' => $request->location,
             'regency' => $request->regency,
-            'district' => $request->district
+            'district' => $request->district,
+            'province' => $request->province
         ]);
 
         return new UniversityResource(true, 'Data Universitas berhasil ditambahkan', $university);
@@ -46,8 +48,8 @@ class UniversityController extends Controller
             'name' => 'required|string',
             'location' => 'required|string',
             'district' => 'required|string',
-            'regency' => 'required'
-
+            'regency' => 'required',
+            'province' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -59,7 +61,8 @@ class UniversityController extends Controller
             'name' => $request->name,
             'location' => $request->location,
             'regency' => $request->regency,
-            'district' => $request->district
+            'district' => $request->district,
+            'province' => $request->province
         ]);
 
         return new UniversityResource(true, 'Data Universitas berhasil di update', $university);

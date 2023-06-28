@@ -13,6 +13,7 @@ class JobListing extends Model
     protected $fillable = [
         'company_id',
         'title',
+        'province',
         'description',
         'location',
         'schedule',
@@ -20,6 +21,7 @@ class JobListing extends Model
         'district',
         'start_time',
         'end_time',
+        'isClosed',
     ];
 
 
