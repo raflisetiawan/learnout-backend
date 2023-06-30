@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ApplicationResource;
 use App\Models\Application;
 use App\Models\Student;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -21,8 +22,9 @@ class ApplicationController extends Controller
 
     public function show(string $id)
     {
-        $application = Application::findOrFail($id);
-        return new ApplicationResource(true,  $application, 'Detail Data Application');
+        $application = Application::with('student', 'joblisting')->find($id);
+        $user = User::find($application->student->user_id);
+        return new ApplicationResource(true,  ['application' => $application, 'user' => $user], 'Detail Data Application');
     }
 
     public function store(Request $request)
@@ -109,7 +111,8 @@ class ApplicationController extends Controller
             return [
                 'student' => $application->student,
                 'created_at' => $application->created_at,
-                'status' => $application->status
+                'status' => $application->status,
+                'id' => $application->id
             ];
         });
 
@@ -244,5 +247,37 @@ class ApplicationController extends Controller
         $application->save();
 
         return response()->json(['message' => 'Pekerjaan berhasil di Tolak'], 200);
+    }
+
+    public function getApplicationCountByStudentId(string $studentId)
+    {
+        $applicationCount = Application::where('student_id', $studentId)->count();
+        $applicationPendingCount = Application::where('student_id', $studentId)
+            ->where('status', 'pending')
+            ->count();
+        $applicationRejectCount = Application::where('student_id', $studentId)
+            ->where('status', 'reject')
+            ->count();
+
+        $applications = Application::where('student_id', $studentId)->get(['created_at']); // Retrieve the created_at field for each application
+
+        $applicationsPerDay = [];
+        foreach ($applications as $application) {
+            $timestamp = $application->created_at->timestamp;
+            $day = date('D', $timestamp); // Get the day of the week (e.g., "Mon")
+
+            if (isset($applicationsPerDay[$day])) {
+                $applicationsPerDay[$day]++;
+            } else {
+                $applicationsPerDay[$day] = 1;
+            }
+        }
+
+        return response()->json([
+            'count' => $applicationCount,
+            'pendingCount' => $applicationPendingCount,
+            'applicationRejectCount' => $applicationRejectCount,
+            'applicationsPerDay' => $applicationsPerDay
+        ]);
     }
 }

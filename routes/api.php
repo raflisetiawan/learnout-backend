@@ -64,6 +64,10 @@ Route::get('/applications/getApplicationsHistoryByJobId/{id}', [ApplicationContr
 Route::get('/applications/getApplicationByStudentId/{id}', [ApplicationController::class, 'getApplicationByStudentId']);
 Route::patch('/applications/accept/{id}', [ApplicationController::class, 'acceptApplication']);
 Route::patch('/applications/reject/{id}', [ApplicationController::class, 'rejectApplication']);
+Route::get('/applications/count/{studentId}', [ApplicationController::class, 'getApplicationCountByStudentId']);
+
+
+
 
 
 Route::apiResource('/categories', App\Http\Controllers\CategoryController::class);

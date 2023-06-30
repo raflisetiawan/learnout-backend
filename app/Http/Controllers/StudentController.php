@@ -7,6 +7,7 @@ use App\Models\Application;
 use App\Models\JobListing;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
@@ -173,15 +174,20 @@ class StudentController extends Controller
         $validator = Validator::make($request->all(), [
             'resume' => 'required|string',
         ]);
+        $student = Student::findOrFail($studentId);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $curriculumVitae = $request->file('curriculum_vitae');
-        $curriculumVitae->storeAs('public/students/curriculum_vitae', $curriculumVitae->hashName());
 
-        $student = Student::findOrFail($studentId);
+        if ($request->file('curriculum_vitae')) {
+            $curriculumVitae = $request->file('curriculum_vitae');
+            $curriculumVitae->storeAs('public/students/curriculum_vitae', $curriculumVitae->hashName());
+            Storage::delete('public/curriculum_vitae' . basename($student->curriculum_vitae));
+        }
+
+
         $student->update(['resume' => $request->resume, 'curriculum_vitae' => $curriculumVitae->hashName()]);
         return response()->json(['data' => $student], 200);
     }

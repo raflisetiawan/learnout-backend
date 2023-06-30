@@ -47,21 +47,21 @@ class JobListingController extends Controller
     public function index(Request $request)
     {
         $keyword = $request->input('keyword');
-        $category = $request->input('category');
+        $categories = $request->input('category');
         $regency = $request->input('regency');
 
         // Query job listings based on the title, category, and regency
         $jobs = JobListing::query()
             ->where('title', 'like', "%{$keyword}%")
-            ->when($category, function ($query, $category) {
-                return $query->whereHas('categories', function ($query) use ($category) {
-                    $query->where('categories.id', $category);
+            ->when($categories, function ($query) use ($categories) {
+                $query->whereHas('categories', function ($query) use ($categories) {
+                    $query->whereIn('categories.id', $categories);
                 });
             })
             ->when($regency, function ($query, $regency) {
                 return $query->where('regency', $regency);
             })
-            ->with('company')
+            ->with('company', 'categories')
             ->paginate(12);
         // Return collection of jobs as a resource
         return new ResourcesJobListing(true, 'List Data Job', $jobs);

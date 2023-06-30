@@ -155,7 +155,7 @@ class UserController extends Controller
             return response()->json(['message' => 'User not found.'], 404);
         }
 
-        $student = Student::where('user_id', $user->id)->first();
+        $student = Student::with('categories')->where('user_id', $user->id)->first();
 
         if (!$student) {
             return response()->json(['message' => 'Student not found.'], 404);
