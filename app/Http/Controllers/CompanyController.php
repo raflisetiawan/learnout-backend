@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CompanyResource;
+use App\Models\Application;
 use App\Models\Company;
+use App\Models\JobListing;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CompanyController extends Controller
@@ -164,5 +168,69 @@ class CompanyController extends Controller
         $company = Company::find($id);
         $company->delete();
         return new CompanyResource(true, 'Data company berhasil di hapus', $company);
+    }
+
+    public function getClosedJobCountByCompanyId(string $id)
+    {
+        $closedJobCount = JobListing::where('company_id', $id)
+            ->where('isClosed', true)
+            ->count();
+
+        return response()->json(['closedJobCount' => $closedJobCount]);
+    }
+    public function getOpenJobCountByCompanyId(string $id)
+    {
+        $company = JobListing::where('company_id', $id)->where('isClosed', false)->count();
+
+        return response()->json(['openJobCount' =>  $company], 200);
+    }
+    public function getAllJobCountByCompanyId(string $id)
+    {
+        $company = JobListing::where('company_id', $id)->count();
+
+        return response()->json(['allCount' =>  $company], 200);
+    }
+
+    public function getJobApplicationsByCompanyId(string $companyId)
+    {
+        $jobListings = JobListing::where('company_id', $companyId)->pluck('id');
+
+        $jobApplications = Application::whereIn('joblisting_id', $jobListings)
+            ->selectRaw('joblisting_id, COUNT(*) AS count, DATE(created_at) AS date')
+            ->groupBy('joblisting_id', 'date')
+            ->orderBy('date')
+            ->get();
+
+        $data = [];
+
+        foreach ($jobApplications as $application) {
+            $jobListing = JobListing::find($application->joblisting_id);
+            $jobId = $jobListing->id;
+            $jobTitle = $jobListing->title;
+            $date = $application->date;
+            $count = $application->count;
+
+            if (!isset($data[$jobId])) {
+                $data[$jobId] = [
+                    'job_id' => $jobId,
+                    'job_title' => $jobTitle,
+                    'application' => [
+                        'date' => [],
+                        'count' => [],
+                    ],
+                ];
+            }
+
+            $data[$jobId]['application']['date'][] = $date;
+            $data[$jobId]['application']['count'][] = $count;
+        }
+
+        return response()->json(['jobApplications' => array_values($data)], 200);
+    }
+
+    public function getTotalCompanies()
+    {
+        $totalCompanies = Company::count();
+        return response()->json(['totalCompanies' => $totalCompanies]);
     }
 }

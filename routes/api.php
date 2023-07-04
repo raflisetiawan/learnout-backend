@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\JobListingController;
@@ -28,6 +29,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::apiResource('/companies', App\Http\Controllers\CompanyController::class);
 Route::get('/companies/user-id/{id}', [CompanyController::class, 'getCompanyByUserId']);
 Route::get('/companies/getOneCompanyByUserId/{id}', [CompanyController::class, 'getOneCompanyByUserId']);
+Route::get('/companies/closed-job-count/{id}', [CompanyController::class, 'getClosedJobCountByCompanyId']);
+Route::get('/companies/open-job-count/{id}', [CompanyController::class, 'getOpenJobCountByCompanyId']);
+Route::get('/companies/all-count/{id}', [CompanyController::class, 'getAllJobCountByCompanyId']);
+Route::get('/companies/get-job-applications-per-day/{id}', [CompanyController::class, 'getJobApplicationsByCompanyId']);
+Route::get('/companies/count/total', [CompanyController::class, 'getTotalCompanies']);
+
+
 
 Route::get('/users/getUserAndStudentByUserId/{id}', [UserController::class, 'getUserAndStudentByUserId']);
 Route::get('/users/getUserAndCompanyByUserId/{id}', [UserController::class, 'getUserAndCompanyByUserId']);
@@ -41,6 +49,8 @@ Route::get('/jobs/getJobByInterest/{id}', [JobListingController::class, 'getJobW
 Route::get('/jobs/getJobByCompanyId/{id}', [JobListingController::class, 'getJobByCompanyId']);
 Route::get('/jobs/getJobByUserId/{id}', [JobListingController::class, 'getJobByUserId']);
 Route::patch('/jobs/close/{id}', [JobListingController::class, 'closeJob']);
+Route::get('/jobs/count/is-closed-count', [JobListingController::class, 'getIsClosedJobCount']);
+
 
 
 Route::apiResource('/universities', App\Http\Controllers\UniversityController::class);
@@ -55,6 +65,8 @@ Route::patch('/students/updateResumeStudent/{id}', [StudentController::class, 'u
 Route::get('/students/getOneStudentByUserId/{id}', [StudentController::class, 'getOneStudentByUserId']);
 Route::get('/students/getStudentWithResume/{id}', [StudentController::class, 'getStudentWithResume']);
 Route::get('/students/getOneStudentByStudentId/{id}', [StudentController::class, 'getOneStudentByStudentId']);
+Route::get('/students/count/total', [StudentController::class, 'getTotalStudents']);
+
 
 Route::apiResource('/applications', App\Http\Controllers\ApplicationController::class);
 Route::get('/applications/getApplicationsHistoryByUserId/{id}', [ApplicationController::class, 'getApplicationsHistoryByUserId']);
@@ -65,6 +77,18 @@ Route::get('/applications/getApplicationByStudentId/{id}', [ApplicationControlle
 Route::patch('/applications/accept/{id}', [ApplicationController::class, 'acceptApplication']);
 Route::patch('/applications/reject/{id}', [ApplicationController::class, 'rejectApplication']);
 Route::get('/applications/count/{studentId}', [ApplicationController::class, 'getApplicationCountByStudentId']);
+Route::get('/getApplicationCount', [ApplicationController::class, 'getApplicationCount']);
+Route::get('/getApplicationsCountPerDay', [ApplicationController::class, 'getApplicationsCountPerDay']);
+Route::get('/getApplicationsCountPerMonth', [ApplicationController::class, 'getApplicationCountPerMonth']);
+Route::get('/getAcceptedApplicationsCountPerMonth', [ApplicationController::class, 'getAcceptedApplicationsCountPerMonth']);
+Route::get('/getRejectedApplicationsCountPerMonth', [ApplicationController::class, 'getRejectedApplicationsCountPerMonth']);
+Route::get('/getPendingApplicationsCountPerMonth', [ApplicationController::class, 'getPendingApplicationsCountPerMonth']);
+
+Route::get('/report/jobListingsPerMonth', [JobListingController::class, 'jobListingsPerMonth']);
+Route::get('/report/getOpenJobListingsCountPerMonth', [JobListingController::class, 'getOpenJobListingsCountPerMonth']);
+Route::get('/report/getCloseJobListingsCountPerMonth', [JobListingController::class, 'getCloseJobListingsCountPerMonth']);
+
+
 
 
 
@@ -72,6 +96,7 @@ Route::get('/applications/count/{studentId}', [ApplicationController::class, 'ge
 
 Route::apiResource('/categories', App\Http\Controllers\CategoryController::class);
 Route::apiResource('/categories', App\Http\Controllers\CategoryController::class);
+Route::get('/categories/count/getJobByCategory', [CategoryController::class, 'getJobCountByCategory']);
 
 Route::patch('/users/update_role/{id}', [UserController::class, 'addRole']);
 

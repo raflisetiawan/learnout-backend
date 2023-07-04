@@ -217,4 +217,11 @@ class StudentController extends Controller
         }
         return response()->json(['success' => true, 'student' => $student], 200);
     }
+
+    public function getTotalStudents()
+    {
+        $totalStudents = Student::count();
+
+        return response()->json(['total_students' => $totalStudents], 200);
+    }
 }

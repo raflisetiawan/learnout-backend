@@ -6,7 +6,9 @@ use App\Http\Resources\ApplicationResource;
 use App\Models\Application;
 use App\Models\Student;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -279,5 +281,160 @@ class ApplicationController extends Controller
             'applicationRejectCount' => $applicationRejectCount,
             'applicationsPerDay' => $applicationsPerDay
         ]);
+    }
+
+    public function getApplicationCount()
+    {
+        $applicationCount = Application::count();
+
+        return response()->json(['count' => $applicationCount]);
+    }
+
+    public function getApplicationsCountPerDay()
+    {
+        $startDate = Carbon::now()->now()->startOfMonth();
+        $endDate = Carbon::now()->now()->endOfMonth();
+
+        $applications = DB::table('applications')
+            ->select(DB::raw('MONTHNAME(created_at) as month'), DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month', 'date')
+            ->get();
+
+        $result = [];
+        foreach ($applications as $application) {
+            $result[$application->month][] = [
+                'date' => $application->date,
+                'count' => $application->count,
+            ];
+        }
+
+        $json = [];
+        foreach ($result as $month => $data) {
+            $json[] = [
+                'month' => $month,
+                'date' => array_column($data, 'date'),
+                'count' => array_column($data, 'count'),
+            ];
+        }
+
+        return response()->json($json);
+    }
+
+    public function getApplicationCountPerMonth()
+    {
+        $startDate = Carbon::now()->startOfYear(); // Start from the beginning of the year
+        $endDate = Carbon::now(); // End at the current date
+
+        $applications = Application::select(
+            DB::raw('MONTHNAME(created_at) as month'),
+            DB::raw('COUNT(*) as count')
+        )
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->orderByRaw('MONTH(created_at)')
+            ->get();
+
+        $months = [];
+        $counts = [];
+        foreach ($applications as $application) {
+            $months[] = $application->month;
+            $counts[] = $application->count;
+        }
+
+        $result = [
+            'month' => $months,
+            'count' => $counts,
+        ];
+
+        return response()->json([$result]);
+    }
+
+    public function getAcceptedApplicationsCountPerMonth()
+    {
+        $startDate = Carbon::now()->startOfYear(); // Start from the beginning of the year
+        $endDate = Carbon::now(); // End at the current date
+
+        $applications = Application::select(
+            DB::raw('MONTHNAME(created_at) as month'),
+            DB::raw('COUNT(*) as count')
+        )
+            ->where('status', 'accept') // Filter by accepted applications
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->orderByRaw('MONTH(created_at)')
+            ->get();
+
+        $months = [];
+        $counts = [];
+        foreach ($applications as $application) {
+            $months[] = $application->month;
+            $counts[] = $application->count;
+        }
+
+        $result = [
+            'month' => $months,
+            'count' => $counts,
+        ];
+
+        return response()->json([$result]);
+    }
+    public function getRejectedApplicationsCountPerMonth()
+    {
+        $startDate = Carbon::now()->startOfYear(); // Start from the beginning of the year
+        $endDate = Carbon::now(); // End at the current date
+
+        $applications = Application::select(
+            DB::raw('MONTHNAME(created_at) as month'),
+            DB::raw('COUNT(*) as count')
+        )
+            ->where('status', 'reject') // Filter by accepted applications
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->orderByRaw('MONTH(created_at)')
+            ->get();
+
+        $months = [];
+        $counts = [];
+        foreach ($applications as $application) {
+            $months[] = $application->month;
+            $counts[] = $application->count;
+        }
+
+        $result = [
+            'month' => $months,
+            'count' => $counts,
+        ];
+
+        return response()->json([$result]);
+    }
+    public function getPendingApplicationsCountPerMonth()
+    {
+        $startDate = Carbon::now()->startOfYear(); // Start from the beginning of the year
+        $endDate = Carbon::now(); // End at the current date
+
+        $applications = Application::select(
+            DB::raw('MONTHNAME(created_at) as month'),
+            DB::raw('COUNT(*) as count')
+        )
+            ->where('status', 'pending') // Filter by accepted applications
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->orderByRaw('MONTH(created_at)')
+            ->get();
+
+        $months = [];
+        $counts = [];
+        foreach ($applications as $application) {
+            $months[] = $application->month;
+            $counts[] = $application->count;
+        }
+
+        $result = [
+            'month' => $months,
+            'count' => $counts,
+        ];
+
+        return response()->json([$result]);
     }
 }

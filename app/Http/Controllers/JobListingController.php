@@ -6,7 +6,9 @@ use App\Http\Resources\JobListing as ResourcesJobListing;
 use App\Models\Company;
 use App\Models\JobListing;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class JobListingController extends Controller
@@ -167,7 +169,7 @@ class JobListingController extends Controller
 
     public function getJobByCompanyId(string $companyId)
     {
-        $jobs = JobListing::where('company_id', $companyId)->get();
+        $jobs = JobListing::where('company_id', $companyId)->where('isClosed', false)->get();
         if (!$jobs) {
             return response()->json(['message' => 'Job Not Found'], 404);
         }
@@ -201,5 +203,129 @@ class JobListingController extends Controller
 
         $jobListing->isClosed = true;
         $jobListing->save();
+    }
+
+    public function getIsClosedJobCount()
+    {
+        $closedCount = JobListing::where('isClosed', true)->count();
+        $openCount = JobListing::where('isClosed', false)->count();
+        return response()->json(['closedCount' => $closedCount, 'openCount' => $openCount], 200);
+    }
+
+    public function jobListingsPerMonth()
+    {
+        $currentYear = Carbon::now()->year;
+        $jobListings = JobListing::selectRaw('MONTHNAME(created_at) AS month, COUNT(*) AS count')
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->orderByRaw('MONTH(created_at)')
+            ->get();
+
+        $months = $jobListings->pluck('month')->toArray();
+        $counts = $jobListings->pluck('count')->toArray();
+
+        $data = [
+            'month' => $months,
+            'count' => $counts
+        ];
+
+        return response()->json([$data]);
+    }
+
+
+    public function jobListingsReport()
+    {
+        $currentYear = Carbon::now()->year;
+        $jobListings = JobListing::selectRaw('MONTHNAME(joblistings.created_at) AS month, COUNT(*) AS count, categories.name AS category')
+            ->join('joblistings_category', 'joblistings.id', '=', 'joblistings_category.joblistings_id')
+            ->join('categories', 'joblistings_category.category_id', '=', 'categories.id')
+            ->whereYear('joblistings.created_at', $currentYear)
+            ->groupBy('month', 'category')
+            ->orderByRaw('MONTH(joblistings.created_at)')
+            ->get();
+
+        $months = $jobListings->pluck('month')->unique()->toArray();
+        $categories = $jobListings->pluck('category')->unique()->toArray();
+
+        $data = [];
+
+        foreach ($categories as $category) {
+            $countPerMonth = [];
+
+            foreach ($months as $month) {
+                $count = $jobListings->where('category', $category)
+                    ->where('month', $month)
+                    ->pluck('count')
+                    ->first() ?? 0;
+
+                $countPerMonth[] = $count;
+            }
+
+            $data[] = [
+                'category' => $category,
+                'count' => $countPerMonth
+            ];
+        }
+
+        return response()->json($data);
+    }
+
+    public function getOpenJobListingsCountPerMonth()
+    {
+        $startDate = Carbon::now()->startOfYear(); // Start from the beginning of the year
+        $endDate = Carbon::now(); // End at the current date
+
+        $jobListings = JobListing::select(
+            DB::raw('MONTHNAME(created_at) as month'),
+            DB::raw('COUNT(*) as count')
+        )
+            ->where('isClosed', false) // Filter by open job listings
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->orderByRaw('MONTH(created_at)')
+            ->get();
+
+        $months = [];
+        $counts = [];
+        foreach ($jobListings as $jobListing) {
+            $months[] = $jobListing->month;
+            $counts[] = $jobListing->count;
+        }
+
+        $result = [
+            'month' => $months,
+            'count' => $counts,
+        ];
+
+        return response()->json([$result]);
+    }
+    public function getCloseJobListingsCountPerMonth()
+    {
+        $startDate = Carbon::now()->startOfYear(); // Start from the beginning of the year
+        $endDate = Carbon::now(); // End at the current date
+
+        $jobListings = JobListing::select(
+            DB::raw('MONTHNAME(created_at) as month'),
+            DB::raw('COUNT(*) as count')
+        )
+            ->where('isClosed', true) // Filter by open job listings
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->orderByRaw('MONTH(created_at)')
+            ->get();
+
+        $months = [];
+        $counts = [];
+        foreach ($jobListings as $jobListing) {
+            $months[] = $jobListing->month;
+            $counts[] = $jobListing->count;
+        }
+
+        $result = [
+            'month' => $months,
+            'count' => $counts,
+        ];
+
+        return response()->json([$result]);
     }
 }

@@ -34,4 +34,9 @@ class JobListing extends Model
     {
         return $this->belongsToMany(Category::class, 'joblistings_category', 'joblistings_id', 'category_id');
     }
+
+    // public function applications()
+    // {
+    //     return $this->hasMany(Application::class, 'joblisting_id');
+    // }
 }
