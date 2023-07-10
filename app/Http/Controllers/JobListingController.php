@@ -51,8 +51,10 @@ class JobListingController extends Controller
         $keyword = $request->input('keyword');
         $categories = $request->input('category');
         $regency = $request->input('regency');
+        $startTime = $request->input('start_time');
+        $endTime = $request->input('end_time');
 
-        // Query job listings based on the title, category, and regency
+        // Query job listings based on the title, category, regency, and time range
         $jobs = JobListing::query()
             ->where('title', 'like', "%{$keyword}%")
             ->when($categories, function ($query) use ($categories) {
@@ -63,11 +65,17 @@ class JobListingController extends Controller
             ->when($regency, function ($query, $regency) {
                 return $query->where('regency', $regency);
             })
+            ->when($startTime && $endTime, function ($query) use ($startTime, $endTime) {
+                return $query->whereBetween('start_time', [$startTime, $endTime])
+                    ->orWhereBetween('end_time', [$startTime, $endTime]);
+            })
             ->with('company', 'categories')
             ->paginate(12);
+
         // Return collection of jobs as a resource
         return new ResourcesJobListing(true, 'List Data Job', $jobs);
     }
+
 
 
 
@@ -327,5 +335,25 @@ class JobListingController extends Controller
         ];
 
         return response()->json([$result]);
+    }
+
+    public function getJoblistingPerMonth()
+    {
+        $jobListings = JobListing::selectRaw('MONTHNAME(joblistings.created_at) AS month, companies.name AS company_name, joblistings.title, joblistings.isClosed')
+            ->join('companies', 'joblistings.company_id', '=', 'companies.id')
+            ->orderBy('joblistings.created_at')
+            ->get();
+
+        $result = [];
+        foreach ($jobListings as $jobListing) {
+            $result[] = [
+                'month' => $jobListing->month,
+                'company_name' => $jobListing->company_name,
+                'title' => $jobListing->title,
+                'status' => $jobListing->isClosed ? 'Closed' : 'Open',
+            ];
+        }
+
+        return response()->json($result);
     }
 }

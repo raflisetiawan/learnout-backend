@@ -51,8 +51,6 @@ Route::get('/jobs/getJobByUserId/{id}', [JobListingController::class, 'getJobByU
 Route::patch('/jobs/close/{id}', [JobListingController::class, 'closeJob']);
 Route::get('/jobs/count/is-closed-count', [JobListingController::class, 'getIsClosedJobCount']);
 
-
-
 Route::apiResource('/universities', App\Http\Controllers\UniversityController::class);
 
 Route::apiResource('/students', App\Http\Controllers\StudentController::class);
@@ -66,7 +64,6 @@ Route::get('/students/getOneStudentByUserId/{id}', [StudentController::class, 'g
 Route::get('/students/getStudentWithResume/{id}', [StudentController::class, 'getStudentWithResume']);
 Route::get('/students/getOneStudentByStudentId/{id}', [StudentController::class, 'getOneStudentByStudentId']);
 Route::get('/students/count/total', [StudentController::class, 'getTotalStudents']);
-
 
 Route::apiResource('/applications', App\Http\Controllers\ApplicationController::class);
 Route::get('/applications/getApplicationsHistoryByUserId/{id}', [ApplicationController::class, 'getApplicationsHistoryByUserId']);
@@ -87,6 +84,8 @@ Route::get('/getPendingApplicationsCountPerMonth', [ApplicationController::class
 Route::get('/report/jobListingsPerMonth', [JobListingController::class, 'jobListingsPerMonth']);
 Route::get('/report/getOpenJobListingsCountPerMonth', [JobListingController::class, 'getOpenJobListingsCountPerMonth']);
 Route::get('/report/getCloseJobListingsCountPerMonth', [JobListingController::class, 'getCloseJobListingsCountPerMonth']);
+Route::get('/report/getJoblistingPerMonth', [JobListingController::class, 'getJoblistingPerMonth']);
+Route::get('/report/getApplicationsPerMonth', [ApplicationController::class, 'getApplicationsPerMonth']);
 
 
 

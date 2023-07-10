@@ -437,4 +437,27 @@ class ApplicationController extends Controller
 
         return response()->json([$result]);
     }
+
+    public function getApplicationsPerMonth()
+    {
+        $applications = Application::selectRaw('MONTHNAME(applications.created_at) AS month, companies.name AS company_name, joblistings.title, students.name AS student_name, applications.status')
+            ->join('joblistings', 'applications.joblisting_id', '=', 'joblistings.id')
+            ->join('students', 'applications.student_id', '=', 'students.id')
+            ->join('companies', 'joblistings.company_id', '=', 'companies.id')
+            ->orderBy('applications.created_at', 'asc')
+            ->get();
+
+        $result = [];
+        foreach ($applications as $application) {
+            $result[] = [
+                'month' => $application->month,
+                'company_name' => $application->company_name,
+                'title' => $application->title,
+                'student_name' => $application->student_name,
+                'status' => $application->status,
+            ];
+        }
+
+        return response()->json($result);
+    }
 }
