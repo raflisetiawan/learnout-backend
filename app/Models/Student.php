@@ -23,7 +23,8 @@ class Student extends Model
         'regency',
         'district',
         'resume',
-        'curriculum_vitae'
+        'curriculum_vitae',
+        'student_role_id'
     ];
 
     public function applications(): BelongsToMany
@@ -56,5 +57,11 @@ class Student extends Model
         return Attribute::make(
             get: fn ($curriculum_vitae) => asset('/storage/students/curriculum_vitae/' . $curriculum_vitae),
         );
+    }
+
+
+    public function student_roles()
+    {
+        return $this->belongsTo(StudentRole::class, 'student_role_id');
     }
 }

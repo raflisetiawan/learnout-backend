@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\JobListing as ResourcesJobListing;
 use App\Models\Company;
+use App\Models\JobApplicationRequisite;
 use App\Models\JobListing;
 use App\Models\User;
 use Carbon\Carbon;
@@ -76,11 +77,6 @@ class JobListingController extends Controller
         return new ResourcesJobListing(true, 'List Data Job', $jobs);
     }
 
-
-
-
-
-
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -95,6 +91,7 @@ class JobListingController extends Controller
             'regency' => 'required|string',
             'district' => 'required|string',
             'province' => 'required',
+            'jobtype_id' => 'required'
         ]);
 
         //check if validation fails
@@ -112,11 +109,21 @@ class JobListingController extends Controller
             'end_time' => $request->end_time,
             'regency' => $request->regency,
             'district' => $request->district,
-            'province' => $request->province
+            'province' => $request->province,
+            'jobtype_id' => $request->jobtype_id
         ]);
 
         $categoryIds = $request->input('categories');
         $job->categories()->sync($categoryIds);
+
+        JobApplicationRequisite::create([
+            'is_cover_letter' => $request->is_cover_letter,
+            'is_transcript' => $request->is_transcript,
+            'is_recommendation_letter' => $request->is_recommendation_letter,
+            'is_proposal' => $request->is_proposal,
+            'is_resume' =>  $request->is_resume,
+            'joblisting_id' => $job->id
+        ]);
 
         return new ResourcesJobListing(true, 'Data job berhasil di tambahkan', $job);
     }
@@ -134,7 +141,8 @@ class JobListingController extends Controller
             'start_time' => 'nullable|date_format:H:i:s',
             'end_time' => 'nullable|date_format:H:i:s',
             'province' => 'required',
-            'categories' => 'required|array'
+            'categories' => 'required|array',
+            'jobtype_id' => 'required'
         ]);
 
         //check if validation fails
@@ -154,11 +162,23 @@ class JobListingController extends Controller
             'end_time' => $request->end_time,
             'regency' => $request->regency,
             'district' => $request->district,
-            'province' => $request->province
+            'province' => $request->province,
+            'jobtype_id' => $request->jobtype_id
         ]);
 
         $categoryIds = $request->input('categories');
         $job->categories()->sync($categoryIds);
+
+        $jobApplicationRequisite = JobApplicationRequisite::where('joblisting_id', $job->id);
+        $jobApplicationRequisite->update([
+            'is_cover_letter' => $request->is_cover_letter,
+            'is_transcript' => $request->is_transcript,
+            'is_recommendation_letter' => $request->is_recommendation_letter,
+            'is_proposal' => $request->is_proposal,
+            'is_resume' =>  $request->is_resume,
+            'joblisting_id' => $job->id
+        ]);
+
 
         return new ResourcesJobListing(true, 'Data job berhasil di update', $job);
     }

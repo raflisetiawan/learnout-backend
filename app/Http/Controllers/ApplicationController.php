@@ -37,6 +37,9 @@ class ApplicationController extends Controller
             'status' => 'required|in:pending,accepted,rejected',
             'cover_letter' => 'nullable|file|mimes:pdf,docx,txt|max:5242880',
             'resume' => 'nullable|file|mimes:pdf,docx,txt|max:5242880',
+            'transcripts' => 'nullable|file|mimes:pdf,docx,txt|max:5242880',
+            'recommendation_letter' => 'nullable|file|mimes:pdf,docx,txt|max:5242880',
+            'proposal' => 'nullable|file|mimes:pdf,docx,txt|max:5242880',
         ]);
 
         if ($validator->fails()) {
@@ -56,11 +59,23 @@ class ApplicationController extends Controller
         $resume = $request->file('resume');
         $resume->storeAs('public/applications/resumes', $resume->hashName());
 
+        $transcripts = $request->file('transcripts');
+        $transcripts->storeAs('public/applications/transcripts', $transcripts->hashName());
+
+        $proposal = $request->file('proposal');
+        $proposal->storeAs('public/applications/proposals', $proposal->hashName());
+
+        $recomendation_letter = $request->file('recomendation_letter');
+        $recomendation_letter->storeAs('public/applications/recomendation-letters', $recomendation_letter->hashName());
+
         $application = Application::create([
             'student_id' => $request->student_id,
             'joblisting_id' => $request->joblisting_id,
             'cover_letter' => $coverLetter->hashName(),
             'resume' => $resume->hashName(),
+            'transcripts' => $transcripts->hashName(),
+            'proposal' => $proposal->hashName(),
+            'recomendation_letter' => $recomendation_letter->hashName(),
             'status' => $request->status,
         ]);
 
@@ -153,7 +168,6 @@ class ApplicationController extends Controller
         if (!$application) {
             return response()->json(['message' => 'Data Application tidak ditemukan'], 404);
         }
-
 
         if ($request->file('cover_letter')) {
             Storage::delete('public/applications/cover-letters/' . basename($application->cover_letter));

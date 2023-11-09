@@ -6,6 +6,7 @@ use App\Http\Resources\StudentResource;
 use App\Models\Application;
 use App\Models\JobListing;
 use App\Models\Student;
+use App\Models\StudentRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -55,6 +56,7 @@ class StudentController extends Controller
             'regency' => 'required',
             'province' => 'required',
             'district' => 'required',
+            'student_role_id' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -74,7 +76,8 @@ class StudentController extends Controller
             'university_id' => $request->university_id,
             'regency' => $request->regency,
             'district' => $request->district,
-            'province' => $request->province
+            'province' => $request->province,
+            'student_role_id' => $request->student_role_id
         ]);
 
         $categoryIds = $request->input('categories');
@@ -92,7 +95,8 @@ class StudentController extends Controller
             'university_id' => 'required|exists:universities,id',
             'regency' => 'required',
             'province' => 'required',
-            'district' => 'required'
+            'district' => 'required',
+            'student_role_id' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -110,7 +114,8 @@ class StudentController extends Controller
             'regency' => $request->regency,
             'district' => $request->district,
             'province' => $request->province,
-            'resume' => $request->resume
+            'resume' => $request->resume,
+            'student_role_id' => $request->student_role_id
         ]);
 
         $categoryIds = $request->input('categories');
@@ -223,5 +228,11 @@ class StudentController extends Controller
         $totalStudents = Student::count();
 
         return response()->json(['total_students' => $totalStudents], 200);
+    }
+
+    public function getStudentRoles()
+    {
+        $roles = StudentRole::all();
+        return response()->json(['student_roles' => $roles], 200);
     }
 }

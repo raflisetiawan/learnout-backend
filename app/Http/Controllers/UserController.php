@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\User as ResourcesUser;
 use App\Models\Company;
+use App\Models\Role;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -19,17 +20,35 @@ class UserController extends Controller
         $users = User::with('role')->get();
         return new ResourcesUser(true, 'List Data User with specific role', $users);
     }
+    public function profile(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user) {
+            $userWithRole = $user->load('role');
+            return new ResourcesUser(true, 'User Profile', $userWithRole);
+        } else {
+            return response()->json(['message' => 'User not authenticated.'], 401);
+        }
+    }
 
     public function addRole(string $id, Request $request)
     {
         $user = User::find($id);
+        $companyRoleId = $this->getCompanyRoleId();
         $user->update([
             'name' => $user->name,
             'email' => $user->email,
             'password' => $user->password,
-            'role' => $request->role
+            'role_id' => $companyRoleId
         ]);
         return new ResourcesUser(true, 'List Data User with specific role', $user);
+    }
+
+    public function getCompanyRoleId()
+    {
+        $roles = Role::where('name', 'company')->get('id')->first();
+        return $roles->id;
     }
 
     /**
@@ -53,7 +72,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::with('role')->findOrFail($id);
         return new ResourcesUser(true, 'User', $user);
     }
 
@@ -133,7 +152,7 @@ class UserController extends Controller
             return response()->json(['message' => 'User not found.'], 404);
         }
 
-        $student = Student::where('user_id', $user->id)->with('university', 'categories')->first();
+        $student = Student::where('user_id', $user->id)->with('university', 'categories', 'student_roles')->first();
 
         if (!$student) {
             return response()->json(['message' => 'Student not found.'], 404);
@@ -155,7 +174,7 @@ class UserController extends Controller
             return response()->json(['message' => 'User not found.'], 404);
         }
 
-        $student = Student::with('categories')->where('user_id', $user->id)->first();
+        $student = Student::with('categories', 'student_roles')->where('user_id', $user->id)->first();
 
         if (!$student) {
             return response()->json(['message' => 'Student not found.'], 404);

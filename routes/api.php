@@ -4,7 +4,10 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ContactUsController;
+use App\Http\Controllers\JobApplicationRequisiteController;
 use App\Http\Controllers\JobListingController;
+use App\Http\Controllers\JobtypeController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -21,10 +24,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', [UserController::class, 'profile']);
 });
-
 
 Route::apiResource('/companies', App\Http\Controllers\CompanyController::class);
 Route::get('/companies/user-id/{id}', [CompanyController::class, 'getCompanyByUserId']);
@@ -64,6 +69,7 @@ Route::get('/students/getOneStudentByUserId/{id}', [StudentController::class, 'g
 Route::get('/students/getStudentWithResume/{id}', [StudentController::class, 'getStudentWithResume']);
 Route::get('/students/getOneStudentByStudentId/{id}', [StudentController::class, 'getOneStudentByStudentId']);
 Route::get('/students/count/total', [StudentController::class, 'getTotalStudents']);
+Route::get('/students/role/get', [StudentController::class, 'getStudentRoles']);
 
 Route::apiResource('/applications', App\Http\Controllers\ApplicationController::class);
 Route::get('/applications/getApplicationsHistoryByUserId/{id}', [ApplicationController::class, 'getApplicationsHistoryByUserId']);
@@ -102,6 +108,16 @@ Route::patch('/users/update_role/{id}', [UserController::class, 'addRole']);
 Route::post('/signin', 'App\Http\Controllers\SignInController@index');
 Route::get('/signout', 'App\Http\Controllers\SignInController@logout');
 Route::post('/signup', 'App\Http\Controllers\SignUpController@store');
+Route::get('/roles/except-admin', [RoleController::class, 'getRoleExceptAdmin']);
+Route::get('/roles/company-id', [RoleController::class, 'getCompanyRoleId']);
+
+Route::get('/jobtypes/all', [JobtypeController::class, 'index']);
+Route::get('/jobtypes/{id}', [JobtypeController::class, 'show']);
+
+Route::get('/job-application-requisites', [JobApplicationRequisiteController::class, 'index']);
+Route::get('/job-application-requisites/{id}', [JobApplicationRequisiteController::class, 'show']);
+Route::get('/job-application-requisites/getByJoblistingId/{id}', [JobApplicationRequisiteController::class, 'getByJoblistingId']);
+
 
 Route::get('contact-us', [ContactUsController::class, 'index']);
 Route::post('contact-us', [ContactUsController::class, 'store']);

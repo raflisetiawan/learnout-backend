@@ -23,8 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
-        'image'
+        'image',
+        'role_id', // Tambahkan 'role_id' ke kolom yang dapat diisi
     ];
 
     /**
@@ -57,5 +57,11 @@ class User extends Authenticatable
         return Attribute::make(
             get: fn ($image) => asset('/storage/users/images/' . $image),
         );
+    }
+
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
     }
 }

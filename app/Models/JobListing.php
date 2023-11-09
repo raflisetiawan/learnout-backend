@@ -22,6 +22,7 @@ class JobListing extends Model
         'start_time',
         'end_time',
         'isClosed',
+        'jobtype_id',
     ];
 
 
@@ -39,4 +40,9 @@ class JobListing extends Model
     // {
     //     return $this->hasMany(Application::class, 'joblisting_id');
     // }
+
+    public function jobtype()
+    {
+        return $this->belongsTo(Jobtype::class, 'jobtype_id');
+    }
 }

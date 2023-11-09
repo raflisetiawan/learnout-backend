@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->foreign('company_id')->references('id')->on('companies');
+            $table->unsignedBigInteger('jobtype_id')->nullable();
+            $table->foreign('jobtype_id')->references('id')->on('jobtypes');
             $table->string('title');
             $table->longText('description');
             $table->string('province')->nullable();
@@ -33,6 +35,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('joblistings');
+        Schema::dropIfExists('joblistings', function (Blueprint $table) {
+            $table->unsignedBigInteger('jobtype_id')->nullable();
+            $table->foreign('jobtype_id')->references('id')->on('jobtypes');
+        });
     }
 };

@@ -5,16 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model
+class StudentRole extends Model
 {
     use HasFactory;
-
-
     protected $fillable = ['name'];
 
-    // Relasi dengan tabel "users" (one-to-many)
-    public function users()
+
+    public function students()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(Student::class);
     }
 }

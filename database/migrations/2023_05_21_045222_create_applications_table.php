@@ -16,6 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('student_id');
             $table->unsignedBigInteger('joblisting_id');
             $table->text('cover_letter');
+            $table->text('transcripts')->nullable();
+            $table->text('recommendation_letter')->nullable();
+            $table->text('proposal')->nullable();
             $table->text('resume')->nullable();
             $table->string('status')->default('pending');
             $table->boolean('is_canceled')->default(false);
