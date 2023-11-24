@@ -126,3 +126,6 @@ Route::get('/full-time-jobs/search', [FullTimeController::class, 'searchByJobTit
 
 Route::get('contact-us', [ContactUsController::class, 'index']);
 Route::post('contact-us', [ContactUsController::class, 'store']);
+Route::get('hai', function () {
+    return 'hai';
+});
