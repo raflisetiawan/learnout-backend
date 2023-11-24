@@ -23,7 +23,7 @@ class Application extends Model
     protected function coverLetter(): Attribute
     {
         return Attribute::make(
-            get: fn ($cover_letter) => asset('/storage/applications/cover-letters/' . $cover_letter),
+            get: fn ($cover_letter) => asset('/storage/applications/cover_letters/' . $cover_letter),
         );
     }
     protected function proposal(): Attribute
@@ -38,10 +38,10 @@ class Application extends Model
             get: fn ($transcript) => asset('/storage/applications/transcripts/' . $transcript),
         );
     }
-    protected function recommendation_letter(): Attribute
+    protected function recommendationLetter(): Attribute
     {
         return Attribute::make(
-            get: fn ($recommendation_letter) => asset('/storage/applications/recommendation-letters/' . $recommendation_letter),
+            get: fn ($recommendation_letter) => asset('/storage/applications/recommendation_letters/' . $recommendation_letter),
         );
     }
 

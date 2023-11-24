@@ -1,12 +1,15 @@
 <?php
 
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\ApprenticeshipController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ContactUsController;
+use App\Http\Controllers\FullTimeController;
 use App\Http\Controllers\JobApplicationRequisiteController;
 use App\Http\Controllers\JobListingController;
 use App\Http\Controllers\JobtypeController;
+use App\Http\Controllers\PartTimeJobController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
@@ -93,12 +96,6 @@ Route::get('/report/getCloseJobListingsCountPerMonth', [JobListingController::cl
 Route::get('/report/getJoblistingPerMonth', [JobListingController::class, 'getJoblistingPerMonth']);
 Route::get('/report/getApplicationsPerMonth', [ApplicationController::class, 'getApplicationsPerMonth']);
 
-
-
-
-
-
-
 Route::apiResource('/categories', App\Http\Controllers\CategoryController::class);
 Route::apiResource('/categories', App\Http\Controllers\CategoryController::class);
 Route::get('/categories/count/getJobByCategory', [CategoryController::class, 'getJobCountByCategory']);
@@ -118,6 +115,14 @@ Route::get('/job-application-requisites', [JobApplicationRequisiteController::cl
 Route::get('/job-application-requisites/{id}', [JobApplicationRequisiteController::class, 'show']);
 Route::get('/job-application-requisites/getByJoblistingId/{id}', [JobApplicationRequisiteController::class, 'getByJoblistingId']);
 
+Route::get('/part-time-jobs', [PartTimeJobController::class, 'index']);
+Route::get('/part-time-jobs/search', [PartTimeJobController::class, 'searchByJobTitle']);
+
+Route::get('/apprenticeship-jobs', [ApprenticeshipController::class, 'index']);
+Route::get('/apprenticeship-jobs/search', [ApprenticeshipController::class, 'searchByJobTitle']);
+
+Route::get('/full-time-jobs', [FullTimeController::class, 'index']);
+Route::get('/full-time-jobs/search', [FullTimeController::class, 'searchByJobTitle']);
 
 Route::get('contact-us', [ContactUsController::class, 'index']);
 Route::post('contact-us', [ContactUsController::class, 'store']);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ApplicationResource;
 use App\Models\Application;
+use App\Models\JobApplicationRequisite;
 use App\Models\Student;
 use App\Models\User;
 use Carbon\Carbon;
@@ -35,16 +36,55 @@ class ApplicationController extends Controller
             'student_id' => 'required|exists:students,id',
             'joblisting_id' => 'required|exists:joblistings,id',
             'status' => 'required|in:pending,accepted,rejected',
-            'cover_letter' => 'nullable|file|mimes:pdf,docx,txt|max:5242880',
-            'resume' => 'nullable|file|mimes:pdf,docx,txt|max:5242880',
-            'transcripts' => 'nullable|file|mimes:pdf,docx,txt|max:5242880',
-            'recommendation_letter' => 'nullable|file|mimes:pdf,docx,txt|max:5242880',
-            'proposal' => 'nullable|file|mimes:pdf,docx,txt|max:5242880',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+        $requisites = JobApplicationRequisite::where('joblisting_id', $request->joblisting_id)->first();
+
+        if (!$requisites) {
+            return response()->json(['message' => 'Requisites not found for this job listing'], 422);
         }
+
+        $fileFields = ['cover_letter', 'resume', 'transcripts', 'recommendation_letter', 'proposal'];
+
+        foreach ($fileFields as $field) {
+            $isRequired = $requisites->{'is_' . $field};
+            $file = $request->file($field);
+
+            if ($isRequired && !$file) {
+                return response()->json(['message' => 'File ' . $field . ' is required'], 422);
+            }
+
+            if ($file) {
+                $maxFileSize = 5242880; // 5MB
+                $allowedMimes = ['pdf', 'docx', 'txt'];
+
+                $validator = Validator::make(
+                    [$field => $file],
+                    [
+                        $field => 'file|mimes:' . implode(',', $allowedMimes) . '|max:' . $maxFileSize,
+                    ]
+                );
+
+                if ($validator->fails()) {
+                    return response()->json($validator->errors(), 422);
+                }
+                if ($field != 'transcripts') {
+
+                    $file->storeAs('public/applications/' . $field . 's', $file->hashName());
+                } else {
+                    $file->storeAs('public/applications/' . $field, $file->hashName());
+                }
+            }
+        }
+
+        $applicationData = ['student_id' => $request->student_id, 'joblisting_id' => $request->joblisting_id, 'status' => $request->status];
+
+        foreach ($fileFields as $field) {
+            if ($request->file($field)) {
+                $applicationData[$field] = $request->file($field)->hashName();
+            }
+        }
+
         $existingApplication = Application::where('student_id', $request->student_id)
             ->where('joblisting_id', $request->joblisting_id)
             ->first();
@@ -53,34 +93,11 @@ class ApplicationController extends Controller
             return response()->json(['message' => 'Anda sudah pernah melamar pekerjaan ini'], 422);
         }
 
-        $coverLetter = $request->file('cover_letter');
-        $coverLetter->storeAs('public/applications/cover-letters', $coverLetter->hashName());
-
-        $resume = $request->file('resume');
-        $resume->storeAs('public/applications/resumes', $resume->hashName());
-
-        $transcripts = $request->file('transcripts');
-        $transcripts->storeAs('public/applications/transcripts', $transcripts->hashName());
-
-        $proposal = $request->file('proposal');
-        $proposal->storeAs('public/applications/proposals', $proposal->hashName());
-
-        $recomendation_letter = $request->file('recomendation_letter');
-        $recomendation_letter->storeAs('public/applications/recomendation-letters', $recomendation_letter->hashName());
-
-        $application = Application::create([
-            'student_id' => $request->student_id,
-            'joblisting_id' => $request->joblisting_id,
-            'cover_letter' => $coverLetter->hashName(),
-            'resume' => $resume->hashName(),
-            'transcripts' => $transcripts->hashName(),
-            'proposal' => $proposal->hashName(),
-            'recomendation_letter' => $recomendation_letter->hashName(),
-            'status' => $request->status,
-        ]);
+        $application = Application::create($applicationData);
 
         return new ApplicationResource(true, 'Data Application Berhasil Ditambahkan!', $application);
     }
+
 
     public function getApplicationsHistoryByUserId(string $id)
     {
@@ -150,9 +167,6 @@ class ApplicationController extends Controller
     }
 
 
-
-
-
     public function update(string $id, Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -169,39 +183,42 @@ class ApplicationController extends Controller
             return response()->json(['message' => 'Data Application tidak ditemukan'], 404);
         }
 
-        if ($request->file('cover_letter')) {
-            Storage::delete('public/applications/cover-letters/' . basename($application->cover_letter));
-        }
-        if ($request->file('resume')) {
-            Storage::delete('public/applications/resumes/' . basename($application->resume));
-        }
+        // Hapus berkas yang sudah ada jika ada pengiriman berkas baru
+        $fileFields = ['cover_letter', 'resume', 'proposal', 'recommendation_letter', 'transcripts'];
 
-        $coverLetter = $request->file('cover_letter');
-        $resume = $request->file('resume');
-
-        if ($coverLetter && $resume) {
-            $coverLetter->storeAs('public/applications/cover-letters', $coverLetter->hashName());
-            $application->cover_letter = $coverLetter->hashName();
-            $resume->storeAs('public/applications/resumes', $resume->hashName());
-            $application->resume = $resume->hashName();
-
-            $application->update([
-                'student_id' => $request->student_id,
-                'joblisting_id' => $request->joblisting_id,
-                'cover_letter' => $coverLetter->hashName(),
-                'resume' => $resume->hashName(),
-                'status' => $request->status,
-            ]);
-        } else {
-            $application->update([
-                'student_id' => $request->student_id,
-                'status' => $request->status,
-            ]);
+        foreach ($fileFields as $field) {
+            if ($request->file($field)) {
+                if ($field !== 'transcripts') {
+                    Storage::delete('public/applications/' . $field . 's/' . basename($application->$field));
+                } else {
+                    Storage::delete('public/applications/' . $field . basename($application->$field));
+                }
+            }
         }
 
+        // Proses penyimpanan berkas baru jika ada
+        foreach ($fileFields as $field) {
+            $file = $request->file($field);
+            if ($file) {
+                if ($field !== 'transcripts') {
+                    $file->storeAs('public/applications/' . $field . 's', $file->hashName());
+                } else {
+                    $file->storeAs('public/applications/' . $field, $file->hashName());
+                }
+                $application->$field = $file->hashName();
+            }
+        }
+
+        // Perbarui data aplikasi
+        $application->update([
+            'student_id' => $request->student_id,
+            'joblisting_id' => $request->joblisting_id,
+            'status' => $request->status,
+        ]);
 
         return new ApplicationResource(true, 'Data Application Berhasil Diperbarui!', $application);
     }
+
 
     public function destroy(string $id)
     {
@@ -211,11 +228,18 @@ class ApplicationController extends Controller
             return response()->json(['message' => 'Data Application tidak ditemukan'], 404);
         }
 
-        if ($application->cover_letter) {
-            Storage::delete('public/applications/cover-letters/' . basename($application->cover_letter));
-        }
-        if ($application->resume) {
-            Storage::delete('public/applications/resumes/' . basename($application->resume));
+        // Hapus berkas yang terkait jika ada
+        $fileFields = ['cover_letter', 'resume', 'proposal', 'recommendation_letter', 'transcripts'];
+
+        foreach ($fileFields as $field) {
+            if ($application->$field) {
+                if ($field !== 'transcripts') {
+
+                    Storage::delete('public/applications/' . $field . 's/' . basename($application->$field));
+                } else {
+                    Storage::delete('public/applications/' . $field  . basename($application->$field));
+                }
+            }
         }
 
         $application->joblisting()->dissociate();
@@ -225,6 +249,7 @@ class ApplicationController extends Controller
 
         return response()->json(['message' => 'Data Application berhasil dihapus'], 200);
     }
+
 
     public function cancel(string $id)
     {
