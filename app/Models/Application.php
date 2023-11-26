@@ -12,7 +12,7 @@ class Application extends Model
 {
     protected $table = "applications";
     use HasFactory;
-    protected $fillable = ['student_id', 'joblisting_id', 'cover_letter', 'resume', 'status', 'is_canceled', 'transcripts', 'recommendation_letter', 'proposal'];
+    protected $fillable = ['student_id', 'health_insurance', 'joblisting_id', 'cover_letter', 'resume', 'status', 'is_canceled', 'transcripts', 'recommendation_letter', 'proposal'];
 
     protected function resume(): Attribute
     {
@@ -32,16 +32,22 @@ class Application extends Model
             get: fn ($proposal) => asset('/storage/applications/proposals/' . $proposal),
         );
     }
-    protected function transcript(): Attribute
+    protected function transcripts(): Attribute
     {
         return Attribute::make(
-            get: fn ($transcript) => asset('/storage/applications/transcripts/' . $transcript),
+            get: fn ($transcripts) => asset('/storage/applications/transcripts/' . $transcripts),
         );
     }
     protected function recommendationLetter(): Attribute
     {
         return Attribute::make(
             get: fn ($recommendation_letter) => asset('/storage/applications/recommendation_letters/' . $recommendation_letter),
+        );
+    }
+    protected function healthInsurance(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($health_insurance) => asset('/storage/applications/health_insurances/' . $health_insurance),
         );
     }
 

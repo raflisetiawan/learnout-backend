@@ -122,6 +122,7 @@ class JobListingController extends Controller
             'is_recommendation_letter' => $request->is_recommendation_letter,
             'is_proposal' => $request->is_proposal,
             'is_resume' =>  $request->is_resume,
+            'is_health_insurance' =>  $request->is_health_insurance,
             'joblisting_id' => $job->id
         ]);
 
@@ -176,7 +177,8 @@ class JobListingController extends Controller
             'is_recommendation_letter' => $request->is_recommendation_letter,
             'is_proposal' => $request->is_proposal,
             'is_resume' =>  $request->is_resume,
-            'joblisting_id' => $job->id
+            'joblisting_id' => $job->id,
+            'is_health_insurance' => $request->is_health_insurance
         ]);
 
 

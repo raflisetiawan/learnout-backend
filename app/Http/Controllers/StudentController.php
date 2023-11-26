@@ -56,7 +56,8 @@ class StudentController extends Controller
             'regency' => 'required',
             'province' => 'required',
             'district' => 'required',
-            'student_role_id' => 'required'
+            'student_role_id' => 'required',
+            'linkedin' => 'url',
         ]);
 
         if ($validator->fails()) {
@@ -77,7 +78,8 @@ class StudentController extends Controller
             'regency' => $request->regency,
             'district' => $request->district,
             'province' => $request->province,
-            'student_role_id' => $request->student_role_id
+            'student_role_id' => $request->student_role_id,
+            'linkedin' => $request->linkedin,
         ]);
 
         $categoryIds = $request->input('categories');
@@ -96,7 +98,8 @@ class StudentController extends Controller
             'regency' => 'required',
             'province' => 'required',
             'district' => 'required',
-            'student_role_id' => 'required'
+            'student_role_id' => 'required',
+            'linkedin' => 'url',
         ]);
 
         if ($validator->fails()) {
@@ -115,7 +118,8 @@ class StudentController extends Controller
             'district' => $request->district,
             'province' => $request->province,
             'resume' => $request->resume,
-            'student_role_id' => $request->student_role_id
+            'student_role_id' => $request->student_role_id,
+            'linkedin' => $request->linkedin,
         ]);
 
         $categoryIds = $request->input('categories');

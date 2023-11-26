@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Application;
 use App\Models\JobApplicationRequisite;
 use Illuminate\Http\Request;
 
@@ -42,6 +43,7 @@ class JobApplicationRequisiteController extends Controller
 
     public function getByJoblistingId(string $id)
     {
+        // $job = Application::findOrFail($id);
         $jobApplicationRequisite = JobApplicationRequisite::where('joblisting_id', $id)->first();
 
         // Melakukan konversi nilai-nilai numerik ke boolean
@@ -50,6 +52,22 @@ class JobApplicationRequisiteController extends Controller
         $jobApplicationRequisite->is_recommendation_letter = (bool) $jobApplicationRequisite->is_recommendation_letter;
         $jobApplicationRequisite->is_proposal = (bool) $jobApplicationRequisite->is_proposal;
         $jobApplicationRequisite->is_resume = (bool) $jobApplicationRequisite->is_resume;
+        $jobApplicationRequisite->is_health_insurance = (bool) $jobApplicationRequisite->is_health_insurance;
+
+        return response()->json(['jobApplicationRequisite' => $jobApplicationRequisite]);
+    }
+    public function getByJoblistingIdFromUpdateApplication(string $id)
+    {
+        $job = Application::findOrFail($id);
+        $jobApplicationRequisite = JobApplicationRequisite::where('joblisting_id', $job->joblisting_id)->first();
+
+        // Melakukan konversi nilai-nilai numerik ke boolean
+        $jobApplicationRequisite->is_cover_letter = (bool) $jobApplicationRequisite->is_cover_letter;
+        $jobApplicationRequisite->is_transcript = (bool) $jobApplicationRequisite->is_transcript;
+        $jobApplicationRequisite->is_recommendation_letter = (bool) $jobApplicationRequisite->is_recommendation_letter;
+        $jobApplicationRequisite->is_proposal = (bool) $jobApplicationRequisite->is_proposal;
+        $jobApplicationRequisite->is_resume = (bool) $jobApplicationRequisite->is_resume;
+        $jobApplicationRequisite->is_health_insurance = (bool) $jobApplicationRequisite->is_health_insurance;
 
         return response()->json(['jobApplicationRequisite' => $jobApplicationRequisite]);
     }

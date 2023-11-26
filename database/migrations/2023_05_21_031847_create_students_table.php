@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('province')->nullable();
             $table->string('regency');
             $table->string('district');
+            $table->string('linkedin')->nullable();
             $table->unsignedBigInteger('university_id');
             $table->timestamps();
 

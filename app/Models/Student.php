@@ -24,12 +24,13 @@ class Student extends Model
         'district',
         'resume',
         'curriculum_vitae',
-        'student_role_id'
+        'student_role_id',
+        'linkedin'
     ];
 
     public function applications(): BelongsToMany
     {
-        return $this->belongsToMany(Application::class, 'application_student', 'student_id', 'application_id');
+        return $this->belongsToMany(Application::class, 'application_student', 'student_id', 'application_id', 'linkedin',);
     }
 
     public function university()

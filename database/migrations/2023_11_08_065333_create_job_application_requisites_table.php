@@ -18,6 +18,7 @@ return new class extends Migration
             $table->boolean('is_recommendation_letter');
             $table->boolean('is_proposal');
             $table->boolean('is_resume');
+            $table->boolean('is_health_insurance');
             $table->unsignedBigInteger('joblisting_id')->nullable(); // Kolom role_id
             $table->foreign('joblisting_id')->references('id')->on('joblistings');
             $table->timestamps();

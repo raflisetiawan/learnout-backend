@@ -114,6 +114,7 @@ Route::get('/jobtypes/{id}', [JobtypeController::class, 'show']);
 Route::get('/job-application-requisites', [JobApplicationRequisiteController::class, 'index']);
 Route::get('/job-application-requisites/{id}', [JobApplicationRequisiteController::class, 'show']);
 Route::get('/job-application-requisites/getByJoblistingId/{id}', [JobApplicationRequisiteController::class, 'getByJoblistingId']);
+Route::get('/job-application-requisites/getByJoblistingIdFromUpdateApplication/{id}', [JobApplicationRequisiteController::class, 'getByJoblistingIdFromUpdateApplication']);
 
 Route::get('/part-time-jobs', [PartTimeJobController::class, 'index']);
 Route::get('/part-time-jobs/search', [PartTimeJobController::class, 'searchByJobTitle']);

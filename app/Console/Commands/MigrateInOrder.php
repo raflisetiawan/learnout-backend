@@ -54,6 +54,7 @@ class MigrateInOrder extends Command
             '2023_06_20_073048_add_resume_to_students_table.php',
             '2023_06_25_133331_create_contact_us_table.php',
             '2023_05_28_070838_add_image_to_users_table.php',
+            '2023_11_08_065333_create_job_application_requisites_table.php'
         ];
         foreach ($migrations as $migration) {
             $basePath = 'database/migrations/';

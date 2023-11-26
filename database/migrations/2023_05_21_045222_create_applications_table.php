@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('recommendation_letter')->nullable();
             $table->text('proposal')->nullable();
             $table->text('resume')->nullable();
+            $table->text('health_insurance')->nullable();
             $table->string('status')->default('pending');
             $table->boolean('is_canceled')->default(false);
 

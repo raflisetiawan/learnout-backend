@@ -44,7 +44,7 @@ class ApplicationController extends Controller
             return response()->json(['message' => 'Requisites not found for this job listing'], 422);
         }
 
-        $fileFields = ['cover_letter', 'resume', 'transcripts', 'recommendation_letter', 'proposal'];
+        $fileFields = ['cover_letter', 'resume', 'transcripts', 'recommendation_letter', 'proposal', 'health_insurance'];
 
         foreach ($fileFields as $field) {
             $isRequired = $requisites->{'is_' . $field};
@@ -184,8 +184,7 @@ class ApplicationController extends Controller
         }
 
         // Hapus berkas yang sudah ada jika ada pengiriman berkas baru
-        $fileFields = ['cover_letter', 'resume', 'proposal', 'recommendation_letter', 'transcripts'];
-
+        $fileFields = ['cover_letter', 'resume', 'proposal', 'recommendation_letter', 'transcripts', 'health_insurance'];
         foreach ($fileFields as $field) {
             if ($request->file($field)) {
                 if ($field !== 'transcripts') {
